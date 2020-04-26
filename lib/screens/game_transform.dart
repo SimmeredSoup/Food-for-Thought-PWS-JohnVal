@@ -11,8 +11,8 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:flutter_hangman/utilities/score_db.dart' as score_database;
 import 'package:flutter_hangman/utilities/user_scores.dart';
 
-class GameScreen extends StatefulWidget {
-  GameScreen({@required this.hangmanObject});
+class GameScreenTransform extends StatefulWidget {
+  GameScreenTransform({@required this.hangmanObject});
 
   final HangmanWords hangmanObject;
 
@@ -20,7 +20,7 @@ class GameScreen extends StatefulWidget {
   _GameScreenState createState() => _GameScreenState();
 }
 
-class _GameScreenState extends State<GameScreen> {
+class _GameScreenState extends State<GameScreenTransform> {
   final database = score_database.openDB();
   int lives = 5;
   Alphabet englishAlphabet = Alphabet();
@@ -28,12 +28,15 @@ class _GameScreenState extends State<GameScreen> {
   String hiddenWord;
   List<String> wordList = [];
   List<int> hintLetters = [];
-  List<bool> buttonStatus;
+  // List<bool> buttonStatus;
   bool hintStatus;
   int hangState = 0;
   int wordCount = 0;
   bool finishedGame = false;
   bool resetGame = false;
+  int ogNumber;
+  int ogMultiplier;
+  int ogAdder;
 
   void newGame() {
     setState(() {
@@ -52,8 +55,8 @@ class _GameScreenState extends State<GameScreen> {
       padding: EdgeInsets.symmetric(horizontal: 3.5, vertical: 6.0),
       child: Center(
         child: WordButton(
-          buttonTitle: englishAlphabet.alphabet[index].toUpperCase(),
-          onPress: buttonStatus[index] ? () => wordPress(index) : null,
+          buttonTitle: index.toString(),
+          onPress: () => wordPress(index),
         ),
       ),
     );
@@ -72,9 +75,7 @@ class _GameScreenState extends State<GameScreen> {
     resetGame = false;
     hintStatus = true;
     hangState = 0;
-    buttonStatus = List.generate(26, (index) {
-      return true;
-    });
+   
     wordList = [];
     hintLetters = [];
     word = widget.hangmanObject.getWord();
@@ -88,7 +89,7 @@ class _GameScreenState extends State<GameScreen> {
       wordList.add(word[i]);
       hintLetters.add(i);
     }
-    print("our hidden word is: '$hiddenWord'");
+    print("our hidden word is: '$word'");
   }
 
   void wordPress(int index) {
@@ -190,7 +191,6 @@ class _GameScreenState extends State<GameScreen> {
         }
       }
 
-      buttonStatus[index] = false;
       if (hiddenWord == word) {
         finishedGame = true;
         Alert(
@@ -365,9 +365,6 @@ class _GameScreenState extends State<GameScreen> {
                   children: [
                     TableRow(children: [
                       TableCell(
-                        child: createButton(0),
-                      ),
-                      TableCell(
                         child: createButton(1),
                       ),
                       TableCell(
@@ -376,6 +373,8 @@ class _GameScreenState extends State<GameScreen> {
                       TableCell(
                         child: createButton(3),
                       ),
+                    ]),
+                    TableRow(children: [
                       TableCell(
                         child: createButton(4),
                       ),
@@ -396,63 +395,16 @@ class _GameScreenState extends State<GameScreen> {
                       TableCell(
                         child: createButton(9),
                       ),
-                      TableCell(
-                        child: createButton(10),
-                      ),
-                      TableCell(
-                        child: createButton(11),
-                      ),
-                      TableCell(
-                        child: createButton(12),
-                      ),
-                      TableCell(
-                        child: createButton(13),
-                      ),
                     ]),
                     TableRow(children: [
                       TableCell(
-                        child: createButton(14),
+                        child: createButton('B'),
                       ),
                       TableCell(
-                        child: createButton(15),
+                        child: createButton(0),
                       ),
                       TableCell(
-                        child: createButton(16),
-                      ),
-                      TableCell(
-                        child: createButton(17),
-                      ),
-                      TableCell(
-                        child: createButton(18),
-                      ),
-                      TableCell(
-                        child: createButton(19),
-                      ),
-                      TableCell(
-                        child: createButton(20),
-                      ),
-                    ]),
-                    TableRow(children: [
-                      TableCell(
-                        child: createButton(21),
-                      ),
-                      TableCell(
-                        child: createButton(22),
-                      ),
-                      TableCell(
-                        child: createButton(23),
-                      ),
-                      TableCell(
-                        child: createButton(24),
-                      ),
-                      TableCell(
-                        child: createButton(25),
-                      ),
-                      TableCell(
-                        child: Text(''),
-                      ),
-                      TableCell(
-                        child: Text(''),
+                        child: createButton('S'),
                       ),
                     ]),
                   ],

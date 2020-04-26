@@ -8,11 +8,11 @@ const kActionButtonTextStyle = TextStyle(
   letterSpacing: 0.5,
 );
 
-const kActionButtonColor = Color(0xFF1089ff);
-const kActionButtonHighlightColor = Color(0xFF1089ff);
+const kActionButtonColor = Color(0xFFFA8072);
+const kActionButtonHighlightColor = Color(0xFFFA8072);
 
-const kWordButtonColor = Color(0xFF1089ff);
-const kTooltipColor = Color(0xFF1089ff);
+const kWordButtonColor = Color(0xFFFA8072);
+const kTooltipColor = Color(0xFFFA8072);
 
 const kWordButtonTextStyle = TextStyle(
   fontWeight: FontWeight.w600,
@@ -77,7 +77,7 @@ var kGameOverAlertStyle = AlertStyle(
   isCloseButton: false,
   isOverlayTapDismiss: false,
   animationDuration: Duration(milliseconds: 450),
-  backgroundColor: Color(0xFF2C1E68),
+  backgroundColor: Color(0xFF2C2E68),
   alertBorder: RoundedRectangleBorder(
     borderRadius: BorderRadius.circular(10.0),
   ),

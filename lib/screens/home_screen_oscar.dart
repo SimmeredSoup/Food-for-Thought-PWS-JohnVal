@@ -3,7 +3,6 @@ import 'package:flutter/painting.dart';
 import 'package:flutter_hangman/components/action_button.dart';
 import 'package:flutter_hangman/utilities/hangman_words.dart';
 import 'game_screen.dart';
-import 'game_transform.dart';
 import 'loading_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -26,7 +25,7 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Container(
               margin: EdgeInsets.fromLTRB(8.0, 10.0, 8.0, 8.0),
               child: Text(
-                'HANGMAN',
+                'BRAINGAME',
                 style: TextStyle(
                     color: Colors.white,
                     fontSize: 58.0,
@@ -55,7 +54,7 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: <Widget>[
-                  Container(
+                   Container(
 //                    width: 155,
                     height: 64,
                     child: ActionButton(
@@ -64,7 +63,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => GameScreenTransform(
+                            builder: (context) => GameScreen(
                               hangmanObject: widget.hangmanWords,
                             ),
                           ),

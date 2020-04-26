@@ -8,7 +8,7 @@ class HangmanWords {
 
   Future readWords() async {
     String fileText = await rootBundle.loadString('res/hangman_words.txt');
-    _words = fileText.split('\n');
+    _words = fileText.split('\n').map((s) => s.trim()).toList();
   }
 
   void resetWords() {
@@ -41,9 +41,11 @@ class HangmanWords {
 
   String getHiddenWord(int wordLength) {
     String hiddenWord = '';
+
     for (int i = 0; i < wordLength; i++) {
       hiddenWord += '_';
     }
+    print("Our word length was supposed to be $wordLength, but it was ${hiddenWord.length}");
     return hiddenWord;
   }
 }

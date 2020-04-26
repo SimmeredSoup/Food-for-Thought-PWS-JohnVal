@@ -49,13 +49,21 @@ android {
 
     signingConfigs {
         release {
-            keyAlias keystoreProperties['keyAlias']
-            keyPassword keystoreProperties['keyPassword']
-            storeFile file(keystoreProperties['storeFile'])
-            storePassword keystoreProperties['storePassword']
+            storeFile file("release-key.keystore")
+            storePassword 'passwotd'
+            keyAlias 'alias'
+            keyPassword 'password'
+            // keyAlias keystoreProperties['keyAlias']
+            // keyPassword keystoreProperties['keyPassword']
+            // storeFile file(keystoreProperties['storeFile'])
+            // storePassword keystoreProperties['storePassword']
         }
     }
     buildTypes {
+
+        debug {
+            debuggable true
+        }
         release {
 
             signingConfig signingConfigs.release
