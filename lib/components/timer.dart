@@ -14,7 +14,8 @@ class CountDownTimer extends StatefulWidget {
   final bool started;
 
   CountDownTimer(
-      {this.callback,
+      {
+      this.callback,
       this.width,
       this.height,
       this.strokeColor,
@@ -50,14 +51,6 @@ class _CountDownTimerState extends State<CountDownTimer>
           break;
       }
     });
-
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      if (widget.started) {
-        controller.reset();
-        controller.reverse(
-            from: controller.value == 0.0 ? 1.0 : controller.value);
-      }
-    });
   }
 
   @override
@@ -66,19 +59,30 @@ class _CountDownTimerState extends State<CountDownTimer>
     initTimer();
   }
 
+  void updateController(TimerState newState) {
+    if (newState.restart) {
+      controller.reset();
+      controller.reverse(from: 1.0);
+    } else if (newState.active) {
+      if (!controller.isAnimating) {
+        controller.reverse(from: controller.value == 0.0 ? 1.0 : controller.value);
+      }
+    } else {
+      if (controller.isAnimating) {
+        controller.stop();
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     //ThemeData themeData = Theme.of(context);
     return StreamBuilder<TimerState>(
+        initialData: TimerState(active: true, restart: false),
         stream: BlocProvider.of<TimerEventBloc>(context).stateStream,
         builder: (context, snapshot) {
           TimerState newState = snapshot.data;
-          if (newState.active && controller.status != AnimationStatus.reverse) {
-            controller.reverse(
-                from: controller.value == 0.0 ? 1.0 : controller.value);
-          } else if (!newState.active && controller.status == AnimationStatus.reverse) {
-              controller.stop();
-          }
+          updateController(newState);
           return AnimatedBuilder(
               animation: controller,
               builder: (context, child) {

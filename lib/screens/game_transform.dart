@@ -25,7 +25,7 @@ class GameScreenTransform extends StatefulWidget {
 class _GameScreenState extends State<GameScreenTransform> {
   final database = score_database.openDB();
   int lives = 5;
-  CountDownTimer timer;
+  // CountDownTimer timer;
   int maxScore = 1200;
   int durationSeconds = 20;
   int scoreCount = 0;
@@ -39,10 +39,12 @@ class _GameScreenState extends State<GameScreenTransform> {
   int min = 5;
   int max = 30;
   DateTime start;
-  TimerEventBloc _timerEventBloc = TimerEventBloc(TimerState(true));
+  TimerEventBloc _timerEventBloc =
+      TimerEventBloc(TimerState(active: true, restart: false));
 
   void ogNewGame() {
     setState(() {
+      _timerEventBloc.updateState(TimerState(active: true, restart: true));
       lives = 3;
       scoreCount = 0;
       initNumber();
@@ -90,7 +92,8 @@ class _GameScreenState extends State<GameScreenTransform> {
     ogAnswer = ogNumber * ogMultiplier + ogAdder;
 
     print("$ogNumber x $ogMultiplier + $ogAdder = $ogAnswer ");
-
+    print("resuming timer...");
+    _timerEventBloc.updateState(TimerState(active: true, restart: false));
     start = DateTime.now();
   }
 
@@ -202,11 +205,12 @@ class _GameScreenState extends State<GameScreenTransform> {
             width: 62,
             onPressed: () {
               ogNewGame();
-              if (controller != null) {
-                controller.reset();
-                controller.reverse(
-                    from: controller.value == 0.0 ? 1.0 : controller.value);
-              }
+
+              // if (controller != null) {
+              //   controller.reset();
+              //   controller.reverse(
+              //       from: controller.value == 0.0 ? 1.0 : controller.value);
+              // }
               Navigator.pop(context);
             },
             child: Icon(MdiIcons.refresh, size: 30.0),
@@ -218,6 +222,7 @@ class _GameScreenState extends State<GameScreenTransform> {
   }
 
   void submit() {
+    _timerEventBloc.updateState(TimerState(active: false, restart: false));
     if (answer == ogAnswer) {
       setState(() {
         successAlert().show();
@@ -239,7 +244,6 @@ class _GameScreenState extends State<GameScreenTransform> {
   @override
   void initState() {
     super.initState();
-    timer = createTimer();
     initNumber();
   }
 
@@ -248,12 +252,10 @@ class _GameScreenState extends State<GameScreenTransform> {
         height: 35,
         width: 35,
         started: true,
-        callback: (controller) {
-          setState(() {
-            finishAlert(controller).show();
-          });
-        },
         duration: Duration(seconds: durationSeconds),
+        callback: (controller) {
+          finishAlert(controller).show();
+        },
         strokeColor: Colors.red[200]);
   }
 
@@ -333,7 +335,7 @@ class _GameScreenState extends State<GameScreenTransform> {
                               Padding(
                                   padding: const EdgeInsets.fromLTRB(
                                       0, 7.9, 8.7, 0.8),
-                                  child: timer)
+                                  child: createTimer())
                             ],
                           ),
                         ),

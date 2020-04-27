@@ -2,10 +2,18 @@ import 'dart:async';
 
 import 'bloc.dart';
 
+int last = 0;
+
 class TimerState {
   bool active;
-  int start;
-  TimerState(active);
+  bool restart;
+  int cur;
+  TimerState({this.active, this.restart}) : this.cur = last++;
+
+  @override
+  String toString() {
+    return "TimerState($active, $restart) ($cur)";
+  }
 }
 
 class TimerEventBloc implements Bloc {
@@ -20,8 +28,9 @@ class TimerEventBloc implements Bloc {
 
   Stream<TimerState> get stateStream => _stateController.stream;
 
-  void updateState(TimerState change) {
-    _stateController.sink.add(_state);
+  void updateState(TimerState newState) {
+    print("updating stream with $newState");
+    _stateController.add(newState);
   }
 
   @override
