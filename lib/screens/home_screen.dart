@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter_hangman/components/action_button.dart';
 import 'package:flutter_hangman/utilities/hangman_words.dart';
-import 'game_screen.dart';
 import 'game_transform.dart';
 import 'loading_screen.dart';
 import 'package:flutter_hangman/components/timer.dart';
@@ -27,7 +26,7 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Container(
               margin: EdgeInsets.fromLTRB(8.0, 10.0, 8.0, 8.0),
               child: Text(
-                'oscar is stout en stom',
+                'Fish Brain',
                 style: TextStyle(
                     color: Colors.white,
                     fontSize: 58.0,

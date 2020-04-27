@@ -1,18 +1,11 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
-
-//void main() => runApp(MyApp());
-
-class TimerController {
-  Function start;
-  Function restart;
-  Function stop;
-  Function resume;
-}
+import 'package:flutter_hangman/bloc/bloc_provider.dart';
+import 'package:flutter_hangman/bloc/timer_events.dart';
 
 class CountDownTimer extends StatefulWidget {
-  Function(AnimationController) callback;
+  final Function(AnimationController) callback;
   final double width;
   final double height;
   final Color strokeColor;
@@ -76,28 +69,39 @@ class _CountDownTimerState extends State<CountDownTimer>
   @override
   Widget build(BuildContext context) {
     //ThemeData themeData = Theme.of(context);
-    return AnimatedBuilder(
-        animation: controller,
-        builder: (context, child) {
-          return Container(
-            height: widget.height,
-            width: widget.width,
-            child: AspectRatio(
-              aspectRatio: 1.0,
-              child: Stack(
-                children: <Widget>[
-                  Positioned.fill(
-                    child: CustomPaint(
-                        painter: CustomTimerPainter(
-                      animation: controller,
-                      backgroundColor: widget.strokeColor,
-                      color: Theme.of(context).scaffoldBackgroundColor,
-                    )),
+    return StreamBuilder<TimerState>(
+        stream: BlocProvider.of<TimerEventBloc>(context).stateStream,
+        builder: (context, snapshot) {
+          TimerState newState = snapshot.data;
+          if (newState.active && controller.status != AnimationStatus.reverse) {
+            controller.reverse(
+                from: controller.value == 0.0 ? 1.0 : controller.value);
+          } else if (!newState.active && controller.status == AnimationStatus.reverse) {
+              controller.stop();
+          }
+          return AnimatedBuilder(
+              animation: controller,
+              builder: (context, child) {
+                return Container(
+                  height: widget.height,
+                  width: widget.width,
+                  child: AspectRatio(
+                    aspectRatio: 1.0,
+                    child: Stack(
+                      children: <Widget>[
+                        Positioned.fill(
+                          child: CustomPaint(
+                              painter: CustomTimerPainter(
+                            animation: controller,
+                            backgroundColor: widget.strokeColor,
+                            color: Theme.of(context).scaffoldBackgroundColor,
+                          )),
+                        ),
+                      ],
+                    ),
                   ),
-                ],
-              ),
-            ),
-          );
+                );
+              });
         });
   }
 }

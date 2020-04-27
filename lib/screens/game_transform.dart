@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_hangman/bloc/bloc_provider.dart';
+import 'package:flutter_hangman/bloc/timer_events.dart';
 import 'package:flutter_hangman/components/timer.dart';
 import 'package:flutter_hangman/screens/home_screen.dart';
-import 'package:flutter_hangman/utilities/alphabet.dart';
 import 'package:flutter_hangman/components/word_button.dart';
 import 'package:flutter_hangman/utilities/constants.dart';
 import 'package:flutter_hangman/utilities/hangman_words.dart';
@@ -10,7 +11,7 @@ import 'package:rflutter_alert/rflutter_alert.dart';
 import 'dart:math';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:flutter_hangman/utilities/score_db.dart' as score_database;
-import 'package:flutter_hangman/utilities/user_scores.dart';
+// import 'package:flutter_hangman/utilities/user_scores.dart';
 
 class GameScreenTransform extends StatefulWidget {
   GameScreenTransform({@required this.hangmanObject});
@@ -24,18 +25,10 @@ class GameScreenTransform extends StatefulWidget {
 class _GameScreenState extends State<GameScreenTransform> {
   final database = score_database.openDB();
   int lives = 5;
-  Alphabet englishAlphabet = Alphabet();
-  String word;
-  String hiddenWord;
-  List<String> wordList = [];
-  List<int> hintLetters = [];
-  // List<bool> buttonStatus;
   CountDownTimer timer;
-  bool hintStatus;
-  int hangState = 0;
-  int wordCount = 0;
-  bool finishedGame = false;
-  bool resetGame = false;
+  int maxScore = 1200;
+  int durationSeconds = 20;
+  int scoreCount = 0;
   int ogNumber;
   int ogMultiplier;
   int ogAdder;
@@ -45,30 +38,13 @@ class _GameScreenState extends State<GameScreenTransform> {
   Random rnd;
   int min = 5;
   int max = 30;
-
-  void newGame() {
-    setState(() {
-      widget.hangmanObject.resetWords();
-      englishAlphabet = Alphabet();
-      lives = 5;
-      wordCount = 0;
-      finishedGame = false;
-      resetGame = false;
-
-      //initWords();
-      initNumber();
-    });
-  }
+  DateTime start;
+  TimerEventBloc _timerEventBloc = TimerEventBloc(TimerState(true));
 
   void ogNewGame() {
     setState(() {
-      widget.hangmanObject.resetWords();
-      englishAlphabet = Alphabet();
       lives = 3;
-      wordCount = 0;
-      finishedGame = false;
-      resetGame = false;
-      // timer = createTimer();
+      scoreCount = 0;
       initNumber();
     });
   }
@@ -93,32 +69,7 @@ class _GameScreenState extends State<GameScreenTransform> {
     );
   }
 
-  void initWords() {
-    finishedGame = false;
-    resetGame = false;
-    hintStatus = true;
-    hangState = 0;
-
-    wordList = [];
-    hintLetters = [];
-    word = widget.hangmanObject.getWord();
-    if (word.length != 0) {
-      hiddenWord = widget.hangmanObject.getHiddenWord(word.length);
-    } else {
-      returnHomePage();
-    }
-
-    for (int i = 0; i < word.length; i++) {
-      wordList.add(word[i]);
-      hintLetters.add(i);
-    }
-    print("our hidden word is: '$word'");
-  }
-
   void initNumber() {
-    finishedGame = false;
-    resetGame = false;
-    hintStatus = true;
     answer = 0;
 
     rnd = new Random();
@@ -139,6 +90,8 @@ class _GameScreenState extends State<GameScreenTransform> {
     ogAnswer = ogNumber * ogMultiplier + ogAdder;
 
     print("$ogNumber x $ogMultiplier + $ogAdder = $ogAnswer ");
+
+    start = DateTime.now();
   }
 
   //not yet used
@@ -168,12 +121,15 @@ class _GameScreenState extends State<GameScreenTransform> {
   }
 
   Alert successAlert() {
+    var duration = DateTime.now().difference(start);
+    var scoreRound = maxScore *
+        ((durationSeconds - duration.abs().inSeconds) / durationSeconds);
     return Alert(
       context: context,
       style: kSuccessAlertStyle,
       type: AlertType.success,
       title: "You did it",
-//          desc: "You guessed it right!",
+      desc: "You guessed it right! + $scoreRound points",
       buttons: [
         DialogButton(
           radius: BorderRadius.circular(10),
@@ -183,7 +139,7 @@ class _GameScreenState extends State<GameScreenTransform> {
           ),
           onPressed: () {
             setState(() {
-              wordCount += 1;
+              scoreCount += scoreRound.ceil();
               Navigator.pop(context);
               initNumber();
             });
@@ -229,7 +185,7 @@ class _GameScreenState extends State<GameScreenTransform> {
         style: kGameOverAlertStyle,
         context: context,
         title: "Finished!",
-        desc: "Your score is $wordCount",
+        desc: "Your score is $scoreCount",
         buttons: [
           DialogButton(
             width: 62,
@@ -251,7 +207,6 @@ class _GameScreenState extends State<GameScreenTransform> {
                 controller.reverse(
                     from: controller.value == 0.0 ? 1.0 : controller.value);
               }
-
               Navigator.pop(context);
             },
             child: Icon(MdiIcons.refresh, size: 30.0),
@@ -263,7 +218,6 @@ class _GameScreenState extends State<GameScreenTransform> {
   }
 
   void submit() {
-    finishedGame = true;
     if (answer == ogAnswer) {
       setState(() {
         successAlert().show();
@@ -285,210 +239,212 @@ class _GameScreenState extends State<GameScreenTransform> {
   @override
   void initState() {
     super.initState();
-    initWords();
     timer = createTimer();
     initNumber();
   }
 
   CountDownTimer createTimer() {
-    return new CountDownTimer(
+    return CountDownTimer(
         height: 35,
         width: 35,
         started: true,
         callback: (controller) {
           setState(() {
             finishAlert(controller).show();
-            // controller.reset();
-            // controller.reverse(
-            //     from: controller.value == 0.0 ? 1.0 : controller.value);
           });
         },
-        duration: const Duration(seconds: 3),
+        duration: Duration(seconds: durationSeconds),
         strokeColor: Colors.red[200]);
   }
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () {
-        return Future(() => false);
-      },
-      child: Scaffold(
-        body: SafeArea(
-          child: Column(
-            children: <Widget>[
-              Expanded(
-                  flex: 3,
-                  child: Column(
-                    children: <Widget>[
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(6.0, 8.0, 6.0, 45.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[
-                            Row(
-                              children: <Widget>[
-                                Stack(
-                                  children: <Widget>[
-                                    Container(
-                                      padding: EdgeInsets.only(top: 0.5),
-                                      child: IconButton(
-                                        tooltip: 'Lives',
-                                        highlightColor: Colors.transparent,
-                                        splashColor: Colors.transparent,
-                                        iconSize: 39,
-                                        icon: Icon(MdiIcons.heart),
-                                        onPressed: () {},
+    return BlocProvider<TimerEventBloc>(
+      bloc: _timerEventBloc,
+      child: WillPopScope(
+        onWillPop: () {
+          return Future(() => false);
+        },
+        child: Scaffold(
+          body: SafeArea(
+            child: Column(
+              children: <Widget>[
+                Expanded(
+                    flex: 3,
+                    child: Column(
+                      children: <Widget>[
+                        Padding(
+                          padding:
+                              const EdgeInsets.fromLTRB(6.0, 8.0, 6.0, 45.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: <Widget>[
+                              Row(
+                                children: <Widget>[
+                                  Stack(
+                                    children: <Widget>[
+                                      Container(
+                                        padding: EdgeInsets.only(top: 0.5),
+                                        child: IconButton(
+                                          tooltip: 'Lives',
+                                          highlightColor: Colors.transparent,
+                                          splashColor: Colors.transparent,
+                                          iconSize: 39,
+                                          icon: Icon(MdiIcons.heart),
+                                          onPressed: () {},
+                                        ),
                                       ),
-                                    ),
-                                    Container(
-                                      padding:
-                                          EdgeInsets.fromLTRB(8.7, 7.9, 0, 0.8),
-                                      alignment: Alignment.center,
-                                      child: SizedBox(
-                                        height: 38,
-                                        width: 38,
-                                        child: Center(
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(2.0),
-                                            child: Text(
-                                              lives.toString() == "1"
-                                                  ? "I"
-                                                  : lives.toString(),
-                                              style: TextStyle(
-                                                color: Color(0xFF2C1E68),
-                                                fontSize: 20,
-                                                fontWeight: FontWeight.bold,
-                                                fontFamily: 'PatrickHand',
+                                      Container(
+                                        padding: EdgeInsets.fromLTRB(
+                                            8.7, 7.9, 0, 0.8),
+                                        alignment: Alignment.center,
+                                        child: SizedBox(
+                                          height: 38,
+                                          width: 38,
+                                          child: Center(
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.all(2.0),
+                                              child: Text(
+                                                lives.toString() == "1"
+                                                    ? "I"
+                                                    : lives.toString(),
+                                                style: TextStyle(
+                                                  color: Color(0xFF2C1E68),
+                                                  fontSize: 20,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontFamily: 'PatrickHand',
+                                                ),
                                               ),
                                             ),
                                           ),
                                         ),
-                                      ),
-                                    )
-                                  ],
+                                      )
+                                    ],
+                                  ),
+                                ],
+                              ),
+                              Container(
+                                child: Text(
+                                  scoreCount == 1 ? "I" : '$scoreCount',
+                                  style: kWordCounterTextStyle,
                                 ),
-                              ],
-                            ),
-                            Container(
+                              ),
+                              Padding(
+                                  padding: const EdgeInsets.fromLTRB(
+                                      0, 7.9, 8.7, 0.8),
+                                  child: timer)
+                            ],
+                          ),
+                        ),
+                        Expanded(
+                          flex: 1,
+                          child: Container(
+                            alignment: Alignment.bottomCenter,
+                            child: FittedBox(
                               child: Text(
-                                wordCount == 1 ? "I" : '$wordCount',
-                                style: kWordCounterTextStyle,
+                                "$ogNumber x $ogMultiplier ${((ogAdder >= 0) ? "+" : "-")} ${ogAdder.abs()}",
+                                // ogNumber.toString() + "x" + ogMultiplier.toString() +   + ogAdder.abs().toString(),
+                                style: kWordTextStyle,
+                              ),
+                              fit: BoxFit.contain,
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          flex: 1,
+                          child: Container(
+                            margin: EdgeInsets.symmetric(
+                                horizontal: 20, vertical: 30),
+                            width: 221,
+                            height: 91,
+                            //color: Color(0xFFFA8072),
+                            alignment: Alignment.center,
+                            child: FittedBox(
+                              fit: BoxFit.contain,
+                              child: Text(
+                                answer.toString(),
+                                style: kWordTextStyle,
                               ),
                             ),
-                            Padding(
-                                padding:
-                                    const EdgeInsets.fromLTRB(0, 7.9, 8.7, 0.8),
-                                child: timer)
-                          ],
-                        ),
-                      ),
-                      Expanded(
-                        flex: 1,
-                        child: Container(
-                          alignment: Alignment.bottomCenter,
-                          child: FittedBox(
-                            child: Text(
-                              "$ogNumber x $ogMultiplier ${((ogAdder >= 0) ? "+" : "-")} ${ogAdder.abs()}",
-                              // ogNumber.toString() + "x" + ogMultiplier.toString() +   + ogAdder.abs().toString(),
-                              style: kWordTextStyle,
-                            ),
-                            fit: BoxFit.contain,
                           ),
                         ),
-                      ),
-                      Expanded(
-                        flex: 1,
-                        child: Container(
-                          margin: EdgeInsets.symmetric(
-                              horizontal: 20, vertical: 30),
-                          width: 221,
-                          height: 91,
-                          //color: Color(0xFFFA8072),
-                          alignment: Alignment.center,
-                          child: FittedBox(
-                            fit: BoxFit.contain,
-                            child: Text(
-                              answer.toString(),
-                              style: kWordTextStyle,
+                      ],
+                    )),
+                Container(
+                  padding: EdgeInsets.fromLTRB(6.0, 2.0, 6.0, 10.0),
+                  child: Table(
+                    defaultVerticalAlignment:
+                        TableCellVerticalAlignment.baseline,
+                    textBaseline: TextBaseline.alphabetic,
+                    //columnWidths: {1: FlexColumnWidth(10)},
+                    children: [
+                      TableRow(children: [
+                        TableCell(
+                          child: createButton(1),
+                        ),
+                        TableCell(
+                          child: createButton(2),
+                        ),
+                        TableCell(
+                          child: createButton(3),
+                        ),
+                      ]),
+                      TableRow(children: [
+                        TableCell(
+                          child: createButton(4),
+                        ),
+                        TableCell(
+                          child: createButton(5),
+                        ),
+                        TableCell(
+                          child: createButton(6),
+                        ),
+                      ]),
+                      TableRow(children: [
+                        TableCell(
+                          child: createButton(7),
+                        ),
+                        TableCell(
+                          child: createButton(8),
+                        ),
+                        TableCell(
+                          child: createButton(9),
+                        ),
+                      ]),
+                      TableRow(children: [
+                        TableCell(
+                            child: Container(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 3.5, vertical: 6.0),
+                          child: Center(
+                            child: IconButton(
+                              icon: Icon(MdiIcons.backspaceOutline),
+                              onPressed: () => backspace(),
+                              tooltip: "back",
                             ),
                           ),
+                        )),
+                        TableCell(
+                          child: createButton(0),
                         ),
-                      ),
+                        TableCell(
+                            child: Container(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 3.5, vertical: 6.0),
+                          child: Center(
+                            child: IconButton(
+                              icon: Icon(MdiIcons.check),
+                              onPressed: () => submit(),
+                            ),
+                          ),
+                        )),
+                      ]),
                     ],
-                  )),
-              Container(
-                padding: EdgeInsets.fromLTRB(6.0, 2.0, 6.0, 10.0),
-                child: Table(
-                  defaultVerticalAlignment: TableCellVerticalAlignment.baseline,
-                  textBaseline: TextBaseline.alphabetic,
-                  //columnWidths: {1: FlexColumnWidth(10)},
-                  children: [
-                    TableRow(children: [
-                      TableCell(
-                        child: createButton(1),
-                      ),
-                      TableCell(
-                        child: createButton(2),
-                      ),
-                      TableCell(
-                        child: createButton(3),
-                      ),
-                    ]),
-                    TableRow(children: [
-                      TableCell(
-                        child: createButton(4),
-                      ),
-                      TableCell(
-                        child: createButton(5),
-                      ),
-                      TableCell(
-                        child: createButton(6),
-                      ),
-                    ]),
-                    TableRow(children: [
-                      TableCell(
-                        child: createButton(7),
-                      ),
-                      TableCell(
-                        child: createButton(8),
-                      ),
-                      TableCell(
-                        child: createButton(9),
-                      ),
-                    ]),
-                    TableRow(children: [
-                      TableCell(
-                          child: Container(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 3.5, vertical: 6.0),
-                        child: Center(
-                          child: IconButton(
-                            icon: Icon(MdiIcons.backspaceOutline),
-                            onPressed: () => backspace(),
-                            tooltip: "back",
-                          ),
-                        ),
-                      )),
-                      TableCell(
-                        child: createButton(0),
-                      ),
-                      TableCell(
-                          child: Container(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 3.5, vertical: 6.0),
-                        child: Center(
-                          child: IconButton(
-                            icon: Icon(MdiIcons.check),
-                            onPressed: () => submit(),
-                          ),
-                        ),
-                      )),
-                    ]),
-                  ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
