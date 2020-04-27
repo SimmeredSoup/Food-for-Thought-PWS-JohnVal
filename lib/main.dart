@@ -34,8 +34,10 @@ class MyApp extends StatelessWidget {
         textTheme: Theme.of(context).textTheme.apply(fontFamily: 'PatrickHand'),
       ),
       initialRoute: 'homePage',
+      home: HomeScreen(),
       routes: {
         'homePage': (context) => HomeScreen(),
+        '/homePage': (context) => HomeScreen(),
         'scorePage': (context) => ScoreScreen(),
       },
     );

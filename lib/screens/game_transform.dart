@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_hangman/components/timer.dart';
 import 'package:flutter_hangman/screens/home_screen.dart';
 import 'package:flutter_hangman/utilities/alphabet.dart';
 import 'package:flutter_hangman/components/word_button.dart';
@@ -29,6 +30,7 @@ class _GameScreenState extends State<GameScreenTransform> {
   List<String> wordList = [];
   List<int> hintLetters = [];
   // List<bool> buttonStatus;
+  CountDownTimer timer;
   bool hintStatus;
   int hangState = 0;
   int wordCount = 0;
@@ -37,6 +39,12 @@ class _GameScreenState extends State<GameScreenTransform> {
   int ogNumber;
   int ogMultiplier;
   int ogAdder;
+  int ogAnswer = 12318;
+  int answer = 0;
+  int transformScore = 0;
+  Random rnd;
+  int min = 5;
+  int max = 30;
 
   void newGame() {
     setState(() {
@@ -46,17 +54,32 @@ class _GameScreenState extends State<GameScreenTransform> {
       wordCount = 0;
       finishedGame = false;
       resetGame = false;
-      initWords();
+
+      //initWords();
+      initNumber();
     });
   }
 
-  Widget createButton(index) {
+  void ogNewGame() {
+    setState(() {
+      widget.hangmanObject.resetWords();
+      englishAlphabet = Alphabet();
+      lives = 3;
+      wordCount = 0;
+      finishedGame = false;
+      resetGame = false;
+      // timer = createTimer();
+      initNumber();
+    });
+  }
+
+  Widget createButton(number) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 3.5, vertical: 6.0),
       child: Center(
         child: WordButton(
-          buttonTitle: index.toString(),
-          onPress: () => wordPress(index),
+          buttonTitle: number.toString(),
+          onPress: () => numberPress(number),
         ),
       ),
     );
@@ -75,7 +98,7 @@ class _GameScreenState extends State<GameScreenTransform> {
     resetGame = false;
     hintStatus = true;
     hangState = 0;
-   
+
     wordList = [];
     hintLetters = [];
     word = widget.hangmanObject.getWord();
@@ -92,150 +115,200 @@ class _GameScreenState extends State<GameScreenTransform> {
     print("our hidden word is: '$word'");
   }
 
-  void wordPress(int index) {
-    if (lives == 0) {
-      returnHomePage();
-    }
+  void initNumber() {
+    finishedGame = false;
+    resetGame = false;
+    hintStatus = true;
+    answer = 0;
 
-    if (finishedGame) {
-      setState(() {
-        resetGame = true;
-      });
-      return;
-    }
+    rnd = new Random();
+    min = 5;
+    max = 30;
+    ogNumber = min + rnd.nextInt(max - min);
 
-    bool check = false;
+    rnd = new Random();
+    min = 2;
+    max = 10;
+    ogMultiplier = min + rnd.nextInt(max - min);
+
+    rnd = new Random();
+    min = -50;
+    max = 50;
+    ogAdder = min + rnd.nextInt(max - min);
+
+    ogAnswer = ogNumber * ogMultiplier + ogAdder;
+
+    print("$ogNumber x $ogMultiplier + $ogAdder = $ogAnswer ");
+  }
+
+  //not yet used
+  Icon centerIcon(iconchoose, colorchoose) {
+    return Icon(
+      iconchoose,
+      color: colorchoose,
+    );
+  }
+
+  //todo document method
+  void numberPress(int number) {
     setState(() {
-      for (int i = 0; i < wordList.length; i++) {
-        if (wordList[i] == englishAlphabet.alphabet[index]) {
-          check = true;
-          wordList[i] = '';
-          hiddenWord = hiddenWord.replaceFirst(RegExp('_'), word[i], i);
-        }
-      }
-      for (int i = 0; i < wordList.length; i++) {
-        if (wordList[i] == '') {
-          hintLetters.remove(i);
-        }
-      }
-      if (!check) {
-        hangState += 1;
-      }
-
-      if (hangState == 6) {
-        finishedGame = true;
-        lives -= 1;
-        if (lives < 1) {
-          if (wordCount > 0) {
-            Score score = Score(
-                id: 1,
-                scoreDate: DateTime.now().toString(),
-                userScore: wordCount);
-            score_database.manipulateDatabase(score, database);
-          }
-          Alert(
-              style: kGameOverAlertStyle,
-              context: context,
-              title: "Game Over!",
-              desc: "Your score is $wordCount",
-              buttons: [
-                DialogButton(
-                  width: 62,
-                  onPressed: () => returnHomePage(),
-                  child: Icon(
-                    MdiIcons.home,
-                    size: 30.0,
-                  ),
-//                  width: 90,
-                  color: kDialogButtonColor,
-//                  height: 50,
-                ),
-                DialogButton(
-                  width: 62,
-                  onPressed: () {
-                    newGame();
-                    Navigator.pop(context);
-                  },
-                  child: Icon(MdiIcons.refresh, size: 30.0),
-//                  width: 90,
-                  color: kDialogButtonColor,
-//                  height: 20,
-                ),
-              ]).show();
-        } else {
-          Alert(
-            context: context,
-            style: kFailedAlertStyle,
-            type: AlertType.error,
-            title: word,
-//            desc: "You Lost!",
-            buttons: [
-              DialogButton(
-                radius: BorderRadius.circular(10),
-                child: Icon(
-                  MdiIcons.arrowRightThick,
-                  size: 30.0,
-                ),
-                onPressed: () {
-                  setState(() {
-                    Navigator.pop(context);
-                    initWords();
-                  });
-                },
-                width: 127,
-                color: kDialogButtonColor,
-                height: 52,
-              ),
-            ],
-          ).show();
-        }
-      }
-
-      if (hiddenWord == word) {
-        finishedGame = true;
-        Alert(
-          context: context,
-          style: kSuccessAlertStyle,
-          type: AlertType.success,
-          title: word,
-//          desc: "You guessed it right!",
-          buttons: [
-            DialogButton(
-              radius: BorderRadius.circular(10),
-              child: Icon(
-                MdiIcons.arrowRightThick,
-                size: 30.0,
-              ),
-              onPressed: () {
-                setState(() {
-                  wordCount += 1;
-                  Navigator.pop(context);
-                  initWords();
-                });
-              },
-              width: 127,
-              color: kDialogButtonColor,
-              height: 52,
-            )
-          ],
-        ).show();
-      }
+      //new number to be added to the answer. by multiplying by 10 the number gains an 0 which is than replaced by the number inserted (e.g.  12 -> 9 is entered -> 12*10+9= 129)
+      answer *= 10;
+      answer += number;
     });
+  }
+
+  //todo documentation
+  void backspace() {
+    setState(() {
+      //backspace is called, so last number should be removed.
+      //Done by dividing by 10 and then moving the the closest integer lower than the double (e.g. 129 -> 129/10 = 12.9 -> 12)
+      answer = (answer / 10).floor();
+    });
+  }
+
+  Alert successAlert() {
+    return Alert(
+      context: context,
+      style: kSuccessAlertStyle,
+      type: AlertType.success,
+      title: "You did it",
+//          desc: "You guessed it right!",
+      buttons: [
+        DialogButton(
+          radius: BorderRadius.circular(10),
+          child: Icon(
+            MdiIcons.arrowRightThick,
+            size: 30.0,
+          ),
+          onPressed: () {
+            setState(() {
+              wordCount += 1;
+              Navigator.pop(context);
+              initNumber();
+            });
+          },
+          width: 127,
+          color: kDialogButtonColor,
+          height: 52,
+        )
+      ],
+    );
+  }
+
+  Alert failAlert() {
+    return Alert(
+      context: context,
+      style: kFailedAlertStyle,
+      type: AlertType.error,
+      title: ogNumber.toString(),
+//            desc: "You Lost!",
+      buttons: [
+        DialogButton(
+          radius: BorderRadius.circular(10),
+          child: Icon(
+            MdiIcons.arrowRightThick,
+            size: 30.0,
+          ),
+          onPressed: () {
+            setState(() {
+              Navigator.pop(context);
+              initNumber();
+            });
+          },
+          width: 127,
+          color: kDialogButtonColor,
+          height: 52,
+        ),
+      ],
+    );
+  }
+
+  Alert finishAlert(controller) {
+    return Alert(
+        style: kGameOverAlertStyle,
+        context: context,
+        title: "Finished!",
+        desc: "Your score is $wordCount",
+        buttons: [
+          DialogButton(
+            width: 62,
+            onPressed: () => returnHomePage(),
+            child: Icon(
+              MdiIcons.home,
+              size: 30.0,
+            ),
+//                  width: 90,
+            color: kDialogButtonColor,
+//                  height: 50,
+          ),
+          DialogButton(
+            width: 62,
+            onPressed: () {
+              ogNewGame();
+              if (controller != null) {
+                controller.reset();
+                controller.reverse(
+                    from: controller.value == 0.0 ? 1.0 : controller.value);
+              }
+
+              Navigator.pop(context);
+            },
+            child: Icon(MdiIcons.refresh, size: 30.0),
+//                  width: 90,
+            color: kDialogButtonColor,
+//                  height: 20,
+          ),
+        ]);
+  }
+
+  void submit() {
+    finishedGame = true;
+    if (answer == ogAnswer) {
+      setState(() {
+        successAlert().show();
+      });
+    } else {
+      lives -= 1;
+      if (lives > 0) {
+        setState(() {
+          failAlert().show();
+        });
+      } else {
+        setState(() {
+          finishAlert(null).show();
+        });
+      }
+    }
   }
 
   @override
   void initState() {
     super.initState();
     initWords();
+    timer = createTimer();
+    initNumber();
+  }
+
+  CountDownTimer createTimer() {
+    return new CountDownTimer(
+        height: 35,
+        width: 35,
+        started: true,
+        callback: (controller) {
+          setState(() {
+            finishAlert(controller).show();
+            // controller.reset();
+            // controller.reverse(
+            //     from: controller.value == 0.0 ? 1.0 : controller.value);
+          });
+        },
+        duration: const Duration(seconds: 3),
+        strokeColor: Colors.red[200]);
   }
 
   @override
   Widget build(BuildContext context) {
-    if (resetGame) {
-      setState(() {
-        initWords();
-      });
-    }
     return WillPopScope(
       onWillPop: () {
         return Future(() => false);
@@ -303,25 +376,10 @@ class _GameScreenState extends State<GameScreenTransform> {
                                 style: kWordCounterTextStyle,
                               ),
                             ),
-                            Container(
-                              child: IconButton(
-                                tooltip: 'Hint',
-                                iconSize: 39,
-                                icon: Icon(MdiIcons.lightbulb),
-                                highlightColor: Colors.transparent,
-                                splashColor: Colors.transparent,
-                                onPressed: hintStatus
-                                    ? () {
-                                        int rand = Random()
-                                            .nextInt(hintLetters.length);
-                                        wordPress(englishAlphabet.alphabet
-                                            .indexOf(
-                                                wordList[hintLetters[rand]]));
-                                        hintStatus = false;
-                                      }
-                                    : null,
-                              ),
-                            ),
+                            Padding(
+                                padding:
+                                    const EdgeInsets.fromLTRB(0, 7.9, 8.7, 0.8),
+                                child: timer)
                           ],
                         ),
                       ),
@@ -330,11 +388,10 @@ class _GameScreenState extends State<GameScreenTransform> {
                         child: Container(
                           alignment: Alignment.bottomCenter,
                           child: FittedBox(
-                            child: Image.asset(
-                              'images/$hangState.png',
-                              height: 1001,
-                              width: 991,
-                              gaplessPlayback: true,
+                            child: Text(
+                              "$ogNumber x $ogMultiplier ${((ogAdder >= 0) ? "+" : "-")} ${ogAdder.abs()}",
+                              // ogNumber.toString() + "x" + ogMultiplier.toString() +   + ogAdder.abs().toString(),
+                              style: kWordTextStyle,
                             ),
                             fit: BoxFit.contain,
                           ),
@@ -343,12 +400,16 @@ class _GameScreenState extends State<GameScreenTransform> {
                       Expanded(
                         flex: 1,
                         child: Container(
-                          margin: EdgeInsets.symmetric(horizontal: 30.0),
+                          margin: EdgeInsets.symmetric(
+                              horizontal: 20, vertical: 30),
+                          width: 221,
+                          height: 91,
+                          //color: Color(0xFFFA8072),
                           alignment: Alignment.center,
                           child: FittedBox(
-                            fit: BoxFit.fitWidth,
+                            fit: BoxFit.contain,
                             child: Text(
-                              hiddenWord,
+                              answer.toString(),
                               style: kWordTextStyle,
                             ),
                           ),
@@ -398,14 +459,31 @@ class _GameScreenState extends State<GameScreenTransform> {
                     ]),
                     TableRow(children: [
                       TableCell(
-                        child: createButton('B'),
-                      ),
+                          child: Container(
+                        padding: EdgeInsets.symmetric(
+                            horizontal: 3.5, vertical: 6.0),
+                        child: Center(
+                          child: IconButton(
+                            icon: Icon(MdiIcons.backspaceOutline),
+                            onPressed: () => backspace(),
+                            tooltip: "back",
+                          ),
+                        ),
+                      )),
                       TableCell(
                         child: createButton(0),
                       ),
                       TableCell(
-                        child: createButton('S'),
-                      ),
+                          child: Container(
+                        padding: EdgeInsets.symmetric(
+                            horizontal: 3.5, vertical: 6.0),
+                        child: Center(
+                          child: IconButton(
+                            icon: Icon(MdiIcons.check),
+                            onPressed: () => submit(),
+                          ),
+                        ),
+                      )),
                     ]),
                   ],
                 ),

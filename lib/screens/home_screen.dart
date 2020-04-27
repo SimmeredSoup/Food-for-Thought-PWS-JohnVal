@@ -5,6 +5,7 @@ import 'package:flutter_hangman/utilities/hangman_words.dart';
 import 'game_screen.dart';
 import 'game_transform.dart';
 import 'loading_screen.dart';
+import 'package:flutter_hangman/components/timer.dart';
 
 class HomeScreen extends StatefulWidget {
   final HangmanWords hangmanWords = HangmanWords();
@@ -26,7 +27,7 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Container(
               margin: EdgeInsets.fromLTRB(8.0, 10.0, 8.0, 8.0),
               child: Text(
-                'HANGMAN',
+                'oscar is stout en stom',
                 style: TextStyle(
                     color: Colors.white,
                     fontSize: 58.0,
@@ -84,7 +85,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => LoadingScreen(),
+                            builder: (context) => CountDownTimer()//LoadingScreen(),
                           ),
                         );
                       },

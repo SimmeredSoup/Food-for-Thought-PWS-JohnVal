@@ -76,19 +76,19 @@ var kGameOverAlertStyle = AlertStyle(
   animationType: AnimationType.grow,
   isCloseButton: false,
   isOverlayTapDismiss: false,
-  animationDuration: Duration(milliseconds: 450),
-  backgroundColor: Color(0xFF2C2E68),
+  animationDuration: Duration(milliseconds: 550),
+  backgroundColor: Color(0xFF353643),
   alertBorder: RoundedRectangleBorder(
     borderRadius: BorderRadius.circular(10.0),
   ),
   titleStyle: TextStyle(
-    color: Colors.red,
+    color: Colors.pink[50],
     fontWeight: FontWeight.bold,
     fontSize: 30.0,
     letterSpacing: 1.5,
   ),
   descStyle: TextStyle(
-    color: Colors.lightBlue,
+    color: Colors.green[200],
     fontWeight: FontWeight.bold,
     fontSize: 25.0,
     letterSpacing: 1.5,
@@ -100,12 +100,12 @@ var kFailedAlertStyle = AlertStyle(
   isCloseButton: false,
   isOverlayTapDismiss: false,
   animationDuration: Duration(milliseconds: 450),
-  backgroundColor: Color(0xFF2C1E68),
+  backgroundColor: Color(0xFF353643),
   alertBorder: RoundedRectangleBorder(
     borderRadius: BorderRadius.circular(10.0),
   ),
   titleStyle: TextStyle(
-    color: Colors.red,
+    color: Colors.red[300],
     fontWeight: FontWeight.bold,
     fontSize: 30.0,
     letterSpacing: 1.5,

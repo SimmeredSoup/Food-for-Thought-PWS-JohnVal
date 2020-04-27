@@ -10,7 +10,7 @@ class WordButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return RaisedButton(
-      elevation: 3.0,
+      elevation: 5.0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10),
       ),
