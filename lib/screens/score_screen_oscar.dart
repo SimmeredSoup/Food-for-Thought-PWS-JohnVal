@@ -1,71 +1,106 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hangman/utilities/constants.dart';
-import 'package:flutter_hangman/utilities/user_scores.dart';
+import 'package:date_format/date_format.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 class ScoreScreen extends StatelessWidget {
-  final List<Score> scores;
-  final String title;
+  final query;
 
-  ScoreScreen({this.scores, this.title});
+  ScoreScreen({this.query});
 
-  TableRow header() {
-    return TableRow(
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(bottom: 15.0),
-          child: Center(
-            child: Text(
-              "Rank",
-              style: kHighScoreTableHeaders,
+  List<TableRow> createRow(var query) {
+    query.sort((a, b) => b.toString().compareTo(a.toString()));
+    List<TableRow> rows = [];
+    rows.add(
+      TableRow(
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(bottom: 15.0),
+            child: Center(
+              child: Text(
+                "Rank",
+                style: kHighScoreTableHeaders,
+              ),
             ),
           ),
-        ),
-        // Padding(
-        //   padding: const EdgeInsets.only(bottom: 15.0),
-        //   child: Center(
-        //     child: Text(
-        //       "Date",
-        //       style: kHighScoreTableHeaders,
-        //     ),
-        //   ),
-        // ),
-        Padding(
-          padding: const EdgeInsets.only(bottom: 15.0),
-          child: Center(
-            child: Text(
-              "Score",
-              style: kHighScoreTableHeaders,
+          Padding(
+            padding: const EdgeInsets.only(bottom: 15.0),
+            child: Center(
+              child: Text(
+                "Date",
+                style: kHighScoreTableHeaders,
+              ),
             ),
           ),
-        ),
-      ],
+          Padding(
+            padding: const EdgeInsets.only(bottom: 15.0),
+            child: Center(
+              child: Text(
+                "Score",
+                style: kHighScoreTableHeaders,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
-  }
+    print("${query[0]} this is query 0");
+    int numOfRows = query.length;
+    List<String> topRanks = ["🥇", "🥈", "🥉"];
+    for (var i = 0; i < numOfRows && i < 10; i++) {
+      var row = query[i].toString().split(",");
+      var date = row[1].split(" ")[0].split("-");
+      var scoreDate = formatDate(
+          DateTime(int.parse(date[0]), int.parse(date[1]), int.parse(date[2])),
+          [yy, '-', M, '-', d]);
 
-  TableCell createTextCell(String text) {
-    return TableCell(
+      Widget item = TableCell(
         child: Padding(
-            padding: const EdgeInsets.only(bottom: 8.0),
+          padding: const EdgeInsets.only(bottom: 8.0),
+          child: Text(
+            i < 3 ? topRanks[i] + '${i + 1}' : '${i + 1}',
+            style: kHighScoreTableRowsStyle,
+            textAlign: TextAlign.center,
+          ),
+        ),
+      );
+      Widget item1 = TableCell(
+        child: Padding(
+          padding: const EdgeInsets.only(bottom: 8.0),
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
             child: Text(
-              text,
+              '$scoreDate',
               style: kHighScoreTableRowsStyle,
               textAlign: TextAlign.center,
-            )));
-  }
-
-  TableRow createRow(Score score, int ranking) {
-    return TableRow(children: [
-      createTextCell(ranking.toString()),
-      createTextCell(score.userScore.toString())
-    ]);
+            ),
+          ),
+        ),
+      );
+      Widget item2 = TableCell(
+        child: Padding(
+          padding: const EdgeInsets.only(bottom: 8.0),
+          child: Text(
+            '${row[0]}',
+            style: kHighScoreTableRowsStyle,
+            textAlign: TextAlign.center,
+          ),
+        ),
+      );
+      rows.add(
+        TableRow(
+          children: [item, item1, item2],
+        ),
+      );
+    }
+    return rows;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: scores.length == 0
+        child: query.length == 0
             ? Stack(
 //                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: <Widget>[
@@ -128,11 +163,6 @@ class ScoreScreen extends StatelessWidget {
                       ),
                     ],
                   ),
-                  Center(
-                      child: Text(
-                    title,
-                    style: kWordTextStyle,
-                  )),
                   Expanded(
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
@@ -140,13 +170,7 @@ class ScoreScreen extends StatelessWidget {
                         defaultVerticalAlignment:
                             TableCellVerticalAlignment.middle,
                         textBaseline: TextBaseline.alphabetic,
-                        children: [header()] +
-                            scores
-                                .asMap()
-                                .map((index, score) => MapEntry(
-                                    index, createRow(score, index + 1)))
-                                .values
-                                .toList(growable: false),
+                        children: createRow(query),
                       ),
                     ),
                   ),

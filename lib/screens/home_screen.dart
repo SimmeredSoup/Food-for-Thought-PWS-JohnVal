@@ -4,7 +4,6 @@ import 'package:flutter_hangman/components/action_button.dart';
 import 'package:flutter_hangman/utilities/hangman_words.dart';
 import 'game_transform.dart';
 import 'loading_screen.dart';
-import 'package:flutter_hangman/components/timer.dart';
 
 class HomeScreen extends StatefulWidget {
   final HangmanWords hangmanWords = HangmanWords();
@@ -84,7 +83,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => CountDownTimer()//LoadingScreen(),
+                            builder: (context) => LoadingScreen(),
                           ),
                         );
                       },

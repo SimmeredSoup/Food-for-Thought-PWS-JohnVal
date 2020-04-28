@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hangman/screens/score_screen.dart';
-import 'package:flutter_hangman/utilities/score_db.dart' as score_database;
+import 'package:flutter_hangman/utilities/score_db.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class LoadingScreen extends StatefulWidget {
@@ -16,14 +16,16 @@ class _LoadingScreenState extends State<LoadingScreen> {
   }
 
   void queryScores() async {
-    final database = score_database.openDB();
-    var queryResult = await score_database.scores(database);
+    final database = await DB.loadDatabase();
+    var queryResult = await database.scores();
+    print("result was $queryResult");
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
         builder: (context) {
           return ScoreScreen(
-            query: queryResult,
+            scores: queryResult,
+            title: "Transform",
           );
         },
       ),

@@ -14,8 +14,7 @@ class CountDownTimer extends StatefulWidget {
   final bool started;
 
   CountDownTimer(
-      {
-      this.callback,
+      {this.callback,
       this.width,
       this.height,
       this.strokeColor,
@@ -39,7 +38,6 @@ class _CountDownTimerState extends State<CountDownTimer>
       vsync: this,
       duration: widget.duration,
     );
-    // controller.reverse(from: controller.value == 0.0 ? 1.0 : controller.value);
     controller.addStatusListener((status) {
       switch (status) {
         case AnimationStatus.dismissed:
@@ -54,6 +52,12 @@ class _CountDownTimerState extends State<CountDownTimer>
   }
 
   @override
+  void dispose() {
+    super.dispose();
+    controller.dispose();
+  }
+
+  @override
   void initState() {
     super.initState();
     initTimer();
@@ -65,7 +69,8 @@ class _CountDownTimerState extends State<CountDownTimer>
       controller.reverse(from: 1.0);
     } else if (newState.active) {
       if (!controller.isAnimating) {
-        controller.reverse(from: controller.value == 0.0 ? 1.0 : controller.value);
+        controller.reverse(
+            from: controller.value == 0.0 ? 1.0 : controller.value);
       }
     } else {
       if (controller.isAnimating) {

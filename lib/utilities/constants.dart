@@ -110,6 +110,12 @@ var kFailedAlertStyle = AlertStyle(
     fontSize: 30.0,
     letterSpacing: 1.5,
   ),
+  descStyle: TextStyle(
+    color: Colors.white,
+    fontWeight: FontWeight.bold,
+    fontSize: 20.0,
+    letterSpacing: 1.0,
+  ),
 );
 
 const kDialogButtonTextStyle = TextStyle(

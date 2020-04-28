@@ -1,14 +1,29 @@
 class Score {
   final int id;
-  final String scoreDate;
+  final String gameid;
+  final DateTime scoreDate;
   final int userScore;
+  final String userName;
 
-  Score({this.id, this.scoreDate, this.userScore});
+  Score(
+      {this.id = 0,
+      this.scoreDate,
+      this.userScore,
+      this.gameid,
+      this.userName});
+
+  Score.fromMap(Map<String, dynamic> map)
+      : id = map['id'],
+        gameid = map['gameid'],
+        scoreDate =DateTime.fromMillisecondsSinceEpoch(map['scoreDate']),
+        userName = map['userName'],
+        userScore = map['userScore'];
 
   Map<String, dynamic> toMap() {
     return {
-//      'id': id,
-      'scoreDate': scoreDate,
+      'scoreDate': scoreDate.millisecondsSinceEpoch,
+      'gameid': gameid,
+      'userName': userName,
       'userScore': userScore,
     };
   }
