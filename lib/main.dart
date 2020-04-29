@@ -30,6 +30,7 @@ class MyApp extends StatelessWidget {
             color: Colors.white,
           ),
         ),
+        accentColor: Color(0xFFFA8072),
         scaffoldBackgroundColor: Color(0xFF353643),
         textTheme: Theme.of(context).textTheme.apply(fontFamily: 'PatrickHand'),
       ),

@@ -53,8 +53,9 @@ class _CountDownTimerState extends State<CountDownTimer>
 
   @override
   void dispose() {
-    super.dispose();
     controller.dispose();
+    super.dispose(); // super dispose NA controller dispose!
+    
   }
 
   @override

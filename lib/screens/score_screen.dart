@@ -131,7 +131,10 @@ class ScoreScreen extends StatelessWidget {
                   Center(
                       child: Text(
                     title,
-                    style: kWordTextStyle,
+                    style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 25.0,
+                              fontWeight: FontWeight.w300,)
                   )),
                   Expanded(
                     child: Padding(

@@ -6,7 +6,6 @@ import 'package:flutter_hangman/components/timer.dart';
 import 'package:flutter_hangman/screens/home_screen.dart';
 import 'package:flutter_hangman/components/word_button.dart';
 import 'package:flutter_hangman/utilities/constants.dart';
-import 'package:flutter_hangman/utilities/hangman_words.dart';
 import 'package:flutter_hangman/utilities/user_scores.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'dart:math';
@@ -15,9 +14,9 @@ import 'package:flutter_hangman/utilities/score_db.dart';
 // import 'package:flutter_hangman/utilities/user_scores.dart';
 
 class GameScreenTransform extends StatefulWidget {
-  GameScreenTransform({@required this.hangmanObject});
+  // GameScreenTransform({@required this.hangmanObject});
 
-  final HangmanWords hangmanObject;
+  //final HangmanWords hangmanObject;
 
   @override
   _GameScreenState createState() => _GameScreenState();
@@ -28,16 +27,17 @@ class _GameScreenState extends State<GameScreenTransform> {
   int lives = 4;
   // CountDownTimer timer;
   int maxScore = 1200;
-  int durationSeconds = 9;
-  int scoreCount = 0;
-  int oldScore = 0;
-  int newScore = 0;
+  int durationSeconds = 10;
+  // int scoreCount = 0;
+  int oldScoreCount = 0;
+  int newScoreCount = 0;
   int ogNumber;
   int ogMultiplier;
   int ogAdder;
   int ogAnswer = 0;
   int answer = 0;
   int ogDifficulty = 0;
+  bool isNeg;
   //int transformScore = 0;
   Random rnd = new Random();
   int min = 5;
@@ -52,9 +52,9 @@ class _GameScreenState extends State<GameScreenTransform> {
     setState(() {
       _timerEventBloc.updateState(TimerState(active: true, restart: true));
       lives = 4;
-      scoreCount = 0;
-      newScore = 0;
-      oldScore = 0;
+      // scoreCount = 0;
+      newScoreCount = 0;
+      oldScoreCount = 0;
       ogDifficulty = 0;
       initNumber();
     });
@@ -84,28 +84,28 @@ class _GameScreenState extends State<GameScreenTransform> {
     answer = 0;
 
     min = 3;
-    max = 10 + (ogDifficulty.toDouble() * 1.5).toInt();
+    max = 6 + (ogDifficulty.toDouble() * 1.6).toInt();
     ogNumber = min + rnd.nextInt(max - min);
-
-    print(max);
 
     min = 2;
     max = 5 + (ogDifficulty.toDouble() * 0.6).toInt();
     ogMultiplier = min + rnd.nextInt(max - min);
 
-    min = -10 - ogDifficulty * 4;
-    max = 10 + ogDifficulty * 3;
+    min = 1 + ogDifficulty * 2;
+    max = 10 + (ogDifficulty.toDouble() * 2.4).toInt();
     ogAdder = min + rnd.nextInt(max - min);
+    isNeg = rnd.nextBool();
+    (isNeg) ? ogAdder *= -1 : ogAdder = ogAdder;
+    print("negative : $isNeg, so Adder = $ogAdder");
 
     if (ogAdder.abs() >= ogNumber * ogMultiplier) {
       ogAdder = ogAdder.abs();
-      print(ogAdder);
+      print("og adder = $ogAdder");
     }
 
     ogAnswer = ogNumber * ogMultiplier + ogAdder;
-
-    print("$ogNumber x $ogMultiplier + $ogAdder = $ogAnswer, $ogDifficulty");
     ogDifficulty++;
+    print("$ogNumber x $ogMultiplier + $ogAdder = $ogAnswer, $ogDifficulty");
     print("resuming timer...");
     _timerEventBloc.updateState(TimerState(active: true, restart: false));
     roundwatch.reset();
@@ -170,16 +170,19 @@ class _GameScreenState extends State<GameScreenTransform> {
   Alert finishAlert(controller) {
     Score score = Score(
         scoreDate: DateTime.now(),
-        userScore: oldScore,
+        userScore: newScoreCount,
         userName: "henk",
         gameid: "transform");
-    _database.addScore(score);
-    print("added score...");
+    if (_database != null && newScoreCount != 0) {
+      _database.addScore(score);
+      print("added score...");
+    } else {print("score was zero/database could not be loaded, so session is not saved");}
+
     return Alert(
         style: kGameOverAlertStyle,
         context: context,
         title: "Finished!",
-        desc: "Your score is $scoreCount",
+        desc: "Your score is $newScoreCount",
         buttons: [
           DialogButton(
             width: 62,
@@ -248,29 +251,31 @@ class _GameScreenState extends State<GameScreenTransform> {
   }
 
   void submit() {
-    _timerEventBloc.updateState(TimerState(active: false, restart: false));
-    roundwatch.stop();
-    if (answer == ogAnswer) {
-      var duration = roundwatch.elapsed;
-      var scoreRound = maxScore *
-          (((durationSeconds * 1000) - duration.abs().inMilliseconds) /
-              (durationSeconds * 1000));
-      print(scoreRound.ceil());
-      setState(() {
-        scoreCount += scoreRound.ceil();
-        newScore = scoreCount;
-        initNumber();
-      });
-    } else {
-      lives -= 1;
-      if (lives > 0) {
+    if (answer != 0) {
+      _timerEventBloc.updateState(TimerState(active: false, restart: false));
+      roundwatch.stop();
+      if (answer == ogAnswer) {
+        var duration = roundwatch.elapsed;
+        var scoreRound = maxScore *
+            (((durationSeconds * 1000) - duration.abs().inMilliseconds) /
+                (durationSeconds * 1000));
+        print(scoreRound.ceil());
         setState(() {
-          failAlert().show();
+          newScoreCount += scoreRound.ceil();
+          //newScore = scoreCount;
+          initNumber();
         });
       } else {
-        setState(() {
-          finishAlert(null).show();
-        });
+        lives -= 1;
+        if (lives > 0) {
+          setState(() {
+            failAlert().show();
+          });
+        } else {
+          setState(() {
+            finishAlert(null).show();
+          });
+        }
       }
     }
   }
@@ -287,20 +292,20 @@ class _GameScreenState extends State<GameScreenTransform> {
   Widget scoreWidget() {
     // int oldScore;
     // int newScore;
-    if (oldScore >= newScore) {
+    if (oldScoreCount >= newScoreCount) {
       return Text(
-        '$oldScore',
+        '$oldScoreCount',
         style: kWordCounterTextStyle,
       );
     } else {
       return TweenAnimationBuilder(
-          duration: Duration(seconds: 2),
+          duration: Duration(seconds: 3),
           tween: Tween<double>(
-              begin: oldScore.toDouble(), end: newScore.toDouble()),
+              begin: oldScoreCount.toDouble(), end: newScoreCount.toDouble()),
           curve: Curves.linearToEaseOut,
           onEnd: () {
             setState(() {
-              oldScore = newScore;
+              oldScoreCount = newScoreCount;
             });
           },
           builder: (_, double scoreT, __) {
