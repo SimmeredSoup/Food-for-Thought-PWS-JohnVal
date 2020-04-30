@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_hangman/utilities/constants.dart';
-import 'package:flutter_hangman/utilities/user_scores.dart';
+import 'package:flutter_food_for_thought/utilities/constants.dart';
+import 'package:flutter_food_for_thought/utilities/user_scores.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 class ScoreScreen extends StatelessWidget {

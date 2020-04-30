@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_hangman/screens/score_screen.dart';
-import 'package:flutter_hangman/utilities/score_db.dart';
+import 'package:flutter_food_for_thought/screens/score_screen.dart';
+import 'package:flutter_food_for_thought/utilities/score_db.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class LoadingScreen extends StatefulWidget {

@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_hangman/bloc/bloc_provider.dart';
-import 'package:flutter_hangman/bloc/timer_events.dart';
-import 'package:flutter_hangman/components/timer.dart';
-import 'package:flutter_hangman/screens/home_screen.dart';
-import 'package:flutter_hangman/components/word_button.dart';
-import 'package:flutter_hangman/utilities/constants.dart';
-import 'package:flutter_hangman/utilities/user_scores.dart';
+import 'package:flutter_food_for_thought/bloc/bloc_provider.dart';
+import 'package:flutter_food_for_thought/bloc/timer_events.dart';
+import 'package:flutter_food_for_thought/components/timer.dart';
+import 'package:flutter_food_for_thought/screens/home_screen.dart';
+import 'package:flutter_food_for_thought/components/word_button.dart';
+import 'package:flutter_food_for_thought/utilities/constants.dart';
+import 'package:flutter_food_for_thought/utilities/user_scores.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'dart:math';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:flutter_hangman/utilities/score_db.dart';
-// import 'package:flutter_hangman/utilities/user_scores.dart';
+import 'package:flutter_food_for_thought/utilities/score_db.dart';
+// import 'package:flutter_food_for_thought/utilities/user_scores.dart';
 
 class GameScreenTransform extends StatefulWidget {
   // GameScreenTransform({@required this.hangmanObject});
@@ -27,7 +27,7 @@ class _GameScreenState extends State<GameScreenTransform> {
   int lives = 4;
   // CountDownTimer timer;
   int maxScore = 1200;
-  int durationSeconds = 10;
+  int durationSeconds = 70;
   // int scoreCount = 0;
   int oldScoreCount = 0;
   int newScoreCount = 0;

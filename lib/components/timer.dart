@@ -1,8 +1,8 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
-import 'package:flutter_hangman/bloc/bloc_provider.dart';
-import 'package:flutter_hangman/bloc/timer_events.dart';
+import 'package:flutter_food_for_thought/bloc/bloc_provider.dart';
+import 'package:flutter_food_for_thought/bloc/timer_events.dart';
 
 class CountDownTimer extends StatefulWidget {
   final Function(AnimationController) callback;

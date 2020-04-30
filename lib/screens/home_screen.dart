@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_hangman/components/action_button.dart';
-import 'package:flutter_hangman/utilities/constants.dart';
-import 'package:flutter_hangman/utilities/hangman_words.dart';
+import 'package:flutter_food_for_thought/components/action_button.dart';
+import 'package:flutter_food_for_thought/utilities/constants.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'game_transform.dart';
@@ -22,6 +21,7 @@ class _HomeScreenState extends State<HomeScreen> {
     SystemSound.play(SystemSoundType.click);
   }
   void symbowlScores() {}
+
   Alert selectAlert() {
     return Alert(
         style: kGameOverAlertStyle,
@@ -45,7 +45,7 @@ class _HomeScreenState extends State<HomeScreen> {
               symbowlScores();
               Navigator.pop(context);
             },
-            child: Icon(MdiIcons.play, size: 30.0),
+            child: Icon(MdiIcons.bowlMix, size: 30.0),
 //                  width: 90,
             color: kDialogButtonColor,
 //                  height: 20,

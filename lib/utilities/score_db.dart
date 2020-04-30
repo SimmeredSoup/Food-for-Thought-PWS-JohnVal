@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'package:flutter_hangman/utilities/user_scores.dart';
+import 'package:flutter_food_for_thought/utilities/user_scores.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 

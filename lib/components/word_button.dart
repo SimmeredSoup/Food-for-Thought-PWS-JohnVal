@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_hangman/utilities/constants.dart';
+import 'package:flutter_food_for_thought/utilities/constants.dart';
 
 class WordButton extends StatelessWidget {
   WordButton({this.buttonTitle, this.onPress});
