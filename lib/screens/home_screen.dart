@@ -3,6 +3,7 @@ import 'package:flutter/painting.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_food_for_thought/components/action_button.dart';
+import 'package:flutter_food_for_thought/screens/game_symbowl.dart';
 import 'package:flutter_food_for_thought/utilities/constants.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
@@ -20,6 +21,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void transformScores() {
     SystemSound.play(SystemSoundType.click);
   }
+
   void symbowlScores() {}
 
   Alert selectAlert() {
@@ -27,12 +29,14 @@ class _HomeScreenState extends State<HomeScreen> {
         style: kGameOverAlertStyle,
         context: context,
         title: "Choose game",
-       // desc: "Take a break",
+        // desc: "Take a break",
         buttons: [
           DialogButton(
             width: 62,
-            onPressed: () { transformScores();
-            Navigator.pop(context); },
+            onPressed: () {
+              transformScores();
+              Navigator.pop(context);
+            },
             child: Icon(
               MdiIcons.formatListNumbered,
               size: 30.0,
@@ -65,10 +69,10 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Container(
               margin: EdgeInsets.fromLTRB(8.0, 10.0, 8.0, 8.0),
               child: Text(
-                'Brain Food',
+                'Food for Thought',
                 style: TextStyle(
                     color: Colors.white,
-                    fontSize: 58.0,
+                    fontSize: 38.0,
                     fontWeight: FontWeight.w300,
                     letterSpacing: 3.0),
               ),
@@ -103,9 +107,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => GameScreenTransform(
-                              //hangmanObject: widget.hangmanWords,
-                            ),
+                            builder: (context) => GameScreenTransform(),
                           ),
                         );
                       },
@@ -117,9 +119,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   Row(
                     children: <Widget>[
                       Container(
-                                         width: 100,
+                        width: 100,
                         height: 56,
-                         alignment: Alignment.centerLeft,
+                        alignment: Alignment.centerLeft,
                         child: IconButton(
                           icon: Icon(
                             Icons.queue_music,
@@ -128,15 +130,22 @@ class _HomeScreenState extends State<HomeScreen> {
                             semanticLabel: 'Hi there',
                           ),
                           onPressed: () {
-                            selectAlert().show();
+                            // selectAlert().show();
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => GameScreenSymbolHunt(),
+                              ),
+                            );
                           },
                         ),
-                      ), Container(
+                      ),
+                      Container(
 //                    width: 155,
                         alignment: Alignment.centerRight,
                         height: 56,
                         width: 100,
-                        
+
                         child: IconButton(
                           icon: Icon(
                             MdiIcons.podium,
