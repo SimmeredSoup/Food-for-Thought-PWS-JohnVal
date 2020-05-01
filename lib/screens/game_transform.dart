@@ -23,7 +23,7 @@ class _GameScreenState extends State<GameScreenTransform> {
   DB _database;
   int lives = 4;
   int maxScore = 1200;
-  int durationSeconds = 20;
+  int durationSeconds = 75;
   int oldScoreCount = 0;
   int newScoreCount = 0;
   Stopwatch roundwatch = Stopwatch();
@@ -87,8 +87,8 @@ class _GameScreenState extends State<GameScreenTransform> {
     //in different magnitudes.
 
     //the first (most left) number
-    min = 3;
-    max = 6 + (ogDifficulty.toDouble() * 1.6).toInt();
+    min = 2;
+    max = 6 + (ogDifficulty.toDouble() * 1.4).toInt();
     ogNumber = min + rnd.nextInt(max - min);
 
     //the middle number, which acts as the multiplier
@@ -98,7 +98,7 @@ class _GameScreenState extends State<GameScreenTransform> {
 
     //the last number, which is the 'adder'.
     min = 1 + ogDifficulty * 2;
-    max = 10 + (ogDifficulty.toDouble() * 2.4).toInt();
+    max = 5 + (ogDifficulty.toDouble() * 2.4).toInt();
     ogAdder = min + rnd.nextInt(max - min);
     //a 50%(?) chance for the adder to be a substracter instead
     isNeg = rnd.nextBool();
@@ -123,6 +123,7 @@ class _GameScreenState extends State<GameScreenTransform> {
 
     //resume the game timer, and start a new timer for the question
     //(the round timer)
+    //removed as it updated timer too quick in succession of a restart state update
     // _timerEventBloc.updateState(TimerState(active: true, restart: false));
     // roundwatch.reset();
     // roundwatch.start();
@@ -511,7 +512,7 @@ class _GameScreenState extends State<GameScreenTransform> {
                               child: Text(
                                 (paused)
                                     ? " "
-                                    : "$ogNumber x $ogMultiplier ${((ogAdder >= 0) ? "+" : "-")} ${ogAdder.abs()}",
+                                    : " $ogNumber x $ogMultiplier ${((ogAdder >= 0) ? "+" : "-")} ${ogAdder.abs()} ",
                                 style: kWordTextStyle,
                               ),
                               fit: BoxFit.contain,
