@@ -188,7 +188,7 @@ class _GameScreenState extends State<GameScreenTransform> {
         var duration = roundwatch.elapsed;
         //the faster the answer is given, the more points the round should give
         var scoreRound = maxScore *
-            (((durationSeconds * 1000) - (duration.abs().inMilliseconds * 7)) /
+            (((durationSeconds * 1000) - (duration.abs().inMilliseconds * 6)) /
                 (durationSeconds * 1000));
         //make sure that a 200 points is the least they get from a correct answer
         (scoreRound < 200) ? scoreRound = 200 : print(scoreRound.ceil());
