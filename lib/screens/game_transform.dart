@@ -69,8 +69,8 @@ class _GameScreenState extends State<GameScreenTransform> {
       ogDifficulty = 0;
       initNumber();
     });
-    roundwatch.reset();
-    roundwatch.start();
+    // roundwatch.reset();
+    // roundwatch.start();
   }
 
   //function to create a new question:
@@ -125,8 +125,8 @@ class _GameScreenState extends State<GameScreenTransform> {
     //(the round timer)
     //removed as it updated timer too quick in succession of a restart state update
     // _timerEventBloc.updateState(TimerState(active: true, restart: false));
-    // roundwatch.reset();
-    // roundwatch.start();
+    roundwatch.reset();
+    roundwatch.start();
   }
 
   //function to go to the home screen:
@@ -181,14 +181,15 @@ class _GameScreenState extends State<GameScreenTransform> {
       //stop the game and round timer
       // print("pausing timer for submit");
       // _timerEventBloc.updateState(TimerState(active: false, restart: false));
-      // roundwatch.stop();
+      //roundwatch.stop();
       //check if they submitted the correct answer
       if (answer == ogAnswer) {
         //calculate the amount of points they earned this round
         var duration = roundwatch.elapsed;
         //the faster the answer is given, the more points the round should give
+        //and higher rounds should give more time/points
         var scoreRound = maxScore *
-            (((durationSeconds * 1000) - (duration.abs().inMilliseconds * 6)) /
+            (((durationSeconds * 1000) - (duration.abs().inMilliseconds * 5) + (ogDifficulty*300)) /
                 (durationSeconds * 1000));
         //make sure that a 200 points is the least they get from a correct answer
         (scoreRound < 200) ? scoreRound = 200 : print(scoreRound.ceil());
