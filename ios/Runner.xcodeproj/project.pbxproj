@@ -390,7 +390,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Flutter",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = tavasoli.reza.flutterHangman;
+				PRODUCT_BUNDLE_IDENTIFIER = oscar.flutterFoodforThought;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				VERSIONING_SYSTEM = "apple-generic";
 			};
@@ -522,7 +522,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Flutter",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = tavasoli.reza.flutterHangman;
+				PRODUCT_BUNDLE_IDENTIFIER = oscar.flutterFoodforThought;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				VERSIONING_SYSTEM = "apple-generic";
 			};
@@ -546,7 +546,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Flutter",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = tavasoli.reza.flutterHangman;
+				PRODUCT_BUNDLE_IDENTIFIER = oscar.flutterFoodforThought;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				VERSIONING_SYSTEM = "apple-generic";
 			};

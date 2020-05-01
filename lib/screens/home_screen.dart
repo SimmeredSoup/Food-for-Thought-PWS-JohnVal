@@ -3,7 +3,6 @@ import 'package:flutter/painting.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_food_for_thought/components/action_button.dart';
-import 'package:flutter_food_for_thought/screens/game_symbowl.dart';
 import 'package:flutter_food_for_thought/utilities/constants.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
@@ -130,13 +129,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             semanticLabel: 'Hi there',
                           ),
                           onPressed: () {
-                            // selectAlert().show();
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => GameScreenSymbolHunt(),
-                              ),
-                            );
+                            selectAlert().show();
                           },
                         ),
                       ),

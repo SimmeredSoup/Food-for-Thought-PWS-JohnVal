@@ -1,4 +1,4 @@
-package tavasoli.reza.flutter_hangman;
+package oscar.flutterFoodforThought;
 
 import android.os.Bundle;
 import io.flutter.app.FlutterActivity;
