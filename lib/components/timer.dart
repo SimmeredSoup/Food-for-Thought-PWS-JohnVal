@@ -30,6 +30,7 @@ class CountDownTimer extends StatefulWidget {
 class _CountDownTimerState extends State<CountDownTimer>
     with TickerProviderStateMixin {
   AnimationController controller;
+  bool isRestarting = false;
 
   _CountDownTimerState();
 
@@ -41,7 +42,10 @@ class _CountDownTimerState extends State<CountDownTimer>
     controller.addStatusListener((status) {
       switch (status) {
         case AnimationStatus.dismissed:
-          this.widget.callback(controller);
+          if (!this.isRestarting) {
+            this.widget.callback(controller);
+          }
+
           break;
         case AnimationStatus.completed:
         case AnimationStatus.forward:
@@ -55,7 +59,6 @@ class _CountDownTimerState extends State<CountDownTimer>
   void dispose() {
     controller.dispose();
     super.dispose(); // super dispose NA controller dispose!
-    
   }
 
   @override
@@ -65,9 +68,14 @@ class _CountDownTimerState extends State<CountDownTimer>
   }
 
   void updateController(TimerState newState) {
+    print("$newState testing");
     if (newState.restart) {
+      print("restarting...");
+      this.isRestarting = true;
       controller.reset();
       controller.reverse(from: 1.0);
+      this.isRestarting = false;
+      print("restarted...");
     } else if (newState.active) {
       if (!controller.isAnimating) {
         controller.reverse(

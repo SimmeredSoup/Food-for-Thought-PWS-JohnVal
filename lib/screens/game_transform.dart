@@ -23,13 +23,14 @@ class _GameScreenState extends State<GameScreenTransform> {
   DB _database;
   int lives = 4;
   int maxScore = 1200;
-  int durationSeconds = 75;
+  int durationSeconds = 20;
   int oldScoreCount = 0;
   int newScoreCount = 0;
   Stopwatch roundwatch = Stopwatch();
   bool paused = false;
   DateTime start;
-  TimerEventBloc _timerEventBloc = TimerEventBloc(TimerState(active: true, restart: false));
+  TimerEventBloc _timerEventBloc =
+      TimerEventBloc(TimerState(active: true, restart: false));
 
   //variables needed for initNumber()
   Random rnd = new Random();
@@ -50,8 +51,26 @@ class _GameScreenState extends State<GameScreenTransform> {
     super.initState();
     //load the database, and then make _database the input
     DB.loadDatabase().then((db) => _database = db);
-    //create the first question
-    initNumber();
+    //start a new game
+    ogNewGame();
+  }
+
+  //function to restart the game
+  //
+  //called when:
+  //-the restart button in the finish alert is pressed
+  void ogNewGame() {
+    setState(() {
+      //restart and activate timer, reset dynamic scores to 0,
+      // and create a new calculation with initNumber()
+      lives = 4;
+      newScoreCount = 0;
+      oldScoreCount = 0;
+      ogDifficulty = 0;
+      initNumber();
+    });
+    roundwatch.reset();
+    roundwatch.start();
   }
 
   //function to create a new question:
@@ -98,31 +117,15 @@ class _GameScreenState extends State<GameScreenTransform> {
     ogDifficulty++;
 
     //some feedback prints
-    print("$ogNumber x $ogMultiplier + $ogAdder = $ogAnswer, round $ogDifficulty");
-    print("resuming timer...");
+    print(
+        "$ogNumber x $ogMultiplier + $ogAdder = $ogAnswer, round $ogDifficulty");
+    // print("resuming timer...");
 
     //resume the game timer, and start a new timer for the question
     //(the round timer)
-    _timerEventBloc.updateState(TimerState(active: true, restart: false));
-    roundwatch.reset();
-    roundwatch.start();
-  }
-
-  //function to restart the game
-  //
-  //called when:
-  //-the restart button in the finish alert is pressed
-  void ogNewGame() {
-    setState(() {
-      //restart and activate timer, reset dynamic scores to 0,
-      // and create a new calculation with initNumber()
-      _timerEventBloc.updateState(TimerState(active: true, restart: true));
-      lives = 4;
-      newScoreCount = 0;
-      oldScoreCount = 0;
-      ogDifficulty = 0;
-      initNumber();
-    });
+    // _timerEventBloc.updateState(TimerState(active: true, restart: false));
+    // roundwatch.reset();
+    // roundwatch.start();
   }
 
   //function to go to the home screen:
@@ -175,22 +178,30 @@ class _GameScreenState extends State<GameScreenTransform> {
     //be equal to or less than 0, so answer won't be 0 ever)
     if (answer != 0) {
       //stop the game and round timer
-      _timerEventBloc.updateState(TimerState(active: false, restart: false));
-      roundwatch.stop();
+      // print("pausing timer for submit");
+      // _timerEventBloc.updateState(TimerState(active: false, restart: false));
+      // roundwatch.stop();
       //check if they submitted the correct answer
       if (answer == ogAnswer) {
         //calculate the amount of points they earned this round
         var duration = roundwatch.elapsed;
         //the faster the answer is given, the more points the round should give
-        var scoreRound = maxScore * (((durationSeconds * 1000) - (duration.abs().inMilliseconds * 7)) / (durationSeconds * 1000));
+        var scoreRound = maxScore *
+            (((durationSeconds * 1000) - (duration.abs().inMilliseconds * 7)) /
+                (durationSeconds * 1000));
         //make sure that a 200 points is the least they get from a correct answer
         (scoreRound < 200) ? scoreRound = 200 : print(scoreRound.ceil());
         //update the new score so that the score animation can play
         setState(() {
           newScoreCount += scoreRound.ceil();
+
           initNumber();
+          // _timerEventBloc.updateState(TimerState(active: true, restart: false));
         });
       } else {
+        // stop the timer
+        _timerEventBloc.updateState(TimerState(active: false, restart: false));
+        roundwatch.stop();
         //when an incorrect answer is given, remove a heart
         lives -= 1;
         //check if the still have remaining lives
@@ -201,9 +212,7 @@ class _GameScreenState extends State<GameScreenTransform> {
           });
         } else {
           //game ends because they have no more lives left
-          setState(() {
-            finishAlert(null).show();
-          });
+          finishAlert(null).show();
         }
       }
     }
@@ -267,17 +276,22 @@ class _GameScreenState extends State<GameScreenTransform> {
     );
   }
 
+  CountDownTimer timer = null;
   //settings for the countdown timer
   CountDownTimer createTimer() {
-    return CountDownTimer(
-        height: 20,
-        width: 20,
-        started: true,
-        duration: Duration(seconds: durationSeconds),
-        callback: (controller) {
-          finishAlert(controller).show();
-        },
-        strokeColor: Colors.red[200]);
+    // print("(re)creating timer...");
+    if (timer == null) {
+      timer = CountDownTimer(
+          height: 20,
+          width: 20,
+          started: true,
+          duration: Duration(seconds: durationSeconds),
+          callback: (controller) {
+            finishAlert(controller).show();
+          },
+          strokeColor: Colors.red[200]);
+    }
+    return timer;
   }
 
   //alert when sumbitting a wrong answer
@@ -300,6 +314,9 @@ class _GameScreenState extends State<GameScreenTransform> {
             setState(() {
               Navigator.pop(context);
               initNumber();
+              print("Updating state to resume from fail");
+              _timerEventBloc
+                  .updateState(TimerState(active: true, restart: false));
             });
           },
           width: 127,
@@ -338,21 +355,17 @@ class _GameScreenState extends State<GameScreenTransform> {
               MdiIcons.home,
               size: 30.0,
             ),
-//                  width: 90,
             color: kDialogButtonColor,
-//                  height: 50,
           ),
           DialogButton(
             width: 62,
             onPressed: () {
-              ogNewGame();
+              print("restarting timer from finishalert");
 
-              // if (controller != null) {
-              //   controller.reset();
-              //   controller.reverse(
-              //       from: controller.value == 0.0 ? 1.0 : controller.value);
-              // }
-              Navigator.pop(context);
+              ogNewGame();
+              _timerEventBloc
+                  .updateState(TimerState(active: true, restart: true));
+              Navigator.of(context).pop();
             },
             child: Icon(MdiIcons.refresh, size: 30.0),
 //                  width: 90,
@@ -391,9 +404,7 @@ class _GameScreenState extends State<GameScreenTransform> {
               Navigator.pop(context);
             },
             child: Icon(MdiIcons.play, size: 30.0),
-//                  width: 90,
             color: kDialogButtonColor,
-//                  height: 20,
           ),
         ]);
   }
