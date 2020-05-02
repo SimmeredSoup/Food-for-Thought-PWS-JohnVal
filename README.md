@@ -8,9 +8,9 @@ A math game written in Dart with Flutter framework. Player has 4 lives and 60 se
 ## Screenshots
 <img src="./res/documentation/hangman_animation.gif" width="240" height="500" />
 
-<img align="center" width="350" src="./res/documentation/display0.png"   ><img align="center" width="350" src="./res/documentation/display1.png" hspace="0">
+<img align="center" width="350" src="./res/documentation/display0.png"   ><img align="center" width="350" src="./res/documentation/display1.png" hspace="25">
 
-<img align="center" width="350"  src="./res/documentation/display2.png"   ><img width="350" align="center" src="./res/documentation/display3.png" hspace="0">
+<img align="center" width="350"  src="./res/documentation/display2.png"   ><img width="350" align="center" src="./res/documentation/display3.png" hspace="25">
 
 
 App screenshots created with <a href="https://previewed.app/">Previewed</a>
