@@ -332,9 +332,9 @@ class _GameScreenState extends State<GameScreenTransform> {
   //alert when game is finished
   Alert finishAlert(controller) {
     Score score = Score(
-        scoreDate: DateTime.now(),
+        scoreDate: DateTime.now(), //not used, still stored
         userScore: newScoreCount,
-        userName: "henk",
+        userName: "player", // not yet used nor changeable
         gameid: "transform");
     if (_database != null && newScoreCount != 0) {
       _database.addScore(score);
@@ -362,8 +362,6 @@ class _GameScreenState extends State<GameScreenTransform> {
           DialogButton(
             width: 62,
             onPressed: () {
-              print("restarting timer from finishalert");
-
               ogNewGame();
               _timerEventBloc
                   .updateState(TimerState(active: true, restart: true));

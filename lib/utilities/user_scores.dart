@@ -15,6 +15,7 @@ class Score {
   Score.fromMap(Map<String, dynamic> map)
       : id = map['id'],
         gameid = map['gameid'],
+        //time since 1970
         scoreDate =DateTime.fromMillisecondsSinceEpoch(map['scoreDate']),
         userName = map['userName'],
         userScore = map['userScore'];

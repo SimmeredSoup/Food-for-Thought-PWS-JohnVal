@@ -3,81 +3,6 @@ import 'package:flutter_food_for_thought/utilities/user_scores.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
-// Future<Database> openDB() async {
-//   final database = openDatabase(
-//     join(await getDatabasesPath(), 'scores_database.db'),
-//     onCreate: (db, version) {
-//       return db.execute(
-//         "CREATE TABLE scores(id INTEGER PRIMARY KEY AUTOINCREMENT, scoreDate TEXT, userScore INTEGER)",
-//       );
-//     },
-//     version: 1,
-//   );
-//   return database;
-// }
-
-// Future<void> insertScore(Score score, final database) async {
-//   final Database db = await database;
-
-//   await db.insert(
-//     'scores',
-//     score.toMap(),
-//     conflictAlgorithm: ConflictAlgorithm.replace,
-//   );
-// }
-
-// Future<List<Score>> scores(final database) async {
-//   print("querying database...");
-//   // Get a reference to the database.
-//   final Database db = await database;
-
-//   // Query the table for all The Dogs.
-//   final List<Map<String, dynamic>> maps = await db.query('scores');
-
-//   // Convert the List<Map<String, dynamic> into a List<Dog>.
-//   return List.generate(maps.length, (i) {
-//     return Score(
-//       id: maps[i]['id'],
-//       scoreDate: maps[i]['scoreDate'],
-//       userScore: maps[i]['userScore'],
-//     );
-//   });
-// }
-
-// Future<void> updateScore(Score score, final database) async {
-//   // Get a reference to the database.
-//   final db = await database;
-
-//   // Update the given Dog.
-//   await db.update(
-//     'scores',
-//     score.toMap(),
-//     // Ensure that the Dog has a matching id.
-//     where: "id = ?",
-//     // Pass the Dog's id as a whereArg to prevent SQL injection.
-//     whereArgs: [score.id],
-//   );
-// }
-
-// Future<void> deleteScore(int id, final database) async {
-//   // Get a reference to the database.
-//   final db = await database;
-
-//   // Remove the Dog from the database.
-//   await db.delete(
-//     'scores',
-//     // Use a `where` clause to delete a specific dog.
-//     where: "id = ?",
-//     // Pass the Dog's id as a whereArg to prevent SQL injection.
-//     whereArgs: [id],
-//   );
-// }
-
-// void manipulateDatabase(Score scoreObject, final database) async {
-//   await insertScore(scoreObject, database);
-//   print(await scores(database));
-// }
-
 class DB {
   Database _db;
 
@@ -87,20 +12,24 @@ class DB {
     final database = await openDatabase(
       join(await getDatabasesPath(), 'scores_database.db'),
       onCreate: (db, version) {
-        return db.transaction((txn) {
-          txn.execute(
+        //probably not needed, but works with transaction
+        db.transaction((transacn) {
+          return transacn.execute(
               "CREATE TABLE scores(id INTEGER PRIMARY KEY AUTOINCREMENT, scoreDate INTEGER, userScore INTEGER, gameid TEXT, userName TEXT)");
         });
       },
       version: 1,
     );
+    //run these lines to delete the database
     // database.execute("DROP TABLE IF EXISTS scores");
     // database.execute(
     //     "CREATE TABLE scores(id INTEGER PRIMARY KEY AUTOINCREMENT, scoreDate INTEGER, userScore INTEGER, gameid TEXT, userName TEXT)");
 
     return DB._(database);
   }
-
+  //function to add scores, same scores to be added aswell
+  //
+  //called when: game is finished with a score greater than 0
   void addScore(Score score) async {
     await _db.insert(
       'scores',
@@ -108,33 +37,29 @@ class DB {
       conflictAlgorithm: ConflictAlgorithm.ignore,
     );
   }
-
-  void updateScore(Score score) async {
-    await _db.update(
-      'scores',
-      score.toMap(),
-      where: "id = ?",
-      whereArgs: [score.id],
-    );
+  //function to delete the scores that dont make the top 10 scores
+  //(dont know how to do this in sqlite, so did raw SQL and 
+  //dont want to change it anymore as it is prone to errors)
+  void deleteScore() async {
+    await _db.rawDelete("DELETE FROM scores WHERE id NOT IN (SELECT id FROM scores ORDER BY userScore DESC LIMIT 10 )");
   }
 
-  void deleteScore(int id) async {
-    await _db.delete(
-      'scores',
-      where: "id = ?",
-      whereArgs: [id],
-    );
-  }
-
-  Future<List<Score>> scores([int gameId]) async {
+  //to be able to call up scores from a specific game
+  //if more games were to be added
+  Future<List<Score>> scores([String gameid]) async {
     List<Map<String, dynamic>> maps;
-    if (gameId != null) {
+    if (gameid != null) {
       maps = await _db.query('scores',
-          where: 'scores.gameid=?',
-          whereArgs: [gameId],
+          where: 'scores.gameid = ?',
+          whereArgs: [gameid],
           orderBy: "userScore DESC");
     } else {
+      //order the table by userScore, top scores at the top
       maps = await _db.query('scores', orderBy: "userScore DESC");
+      //delete called after map is made so your most recent score
+      //can still be seen once if it didnt make top 10
+      //(while testing, screen could fit 12 scores)
+      deleteScore();
     }
     // final List<Map<String, dynamic>> maps = await _db.query('scores');
     return maps.map((row) => Score.fromMap(row)).toList();
