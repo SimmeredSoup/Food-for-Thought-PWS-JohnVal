@@ -66,7 +66,7 @@ class _HomeScreenState extends State<HomeScreen> {
         children: <Widget>[
           Center(
             child: Container(
-              margin: EdgeInsets.fromLTRB(8.0, 10.0, 8.0, 8.0),
+              margin: EdgeInsets.fromLTRB(8.0, 56.0, 8.0, 4.0),
               child: Text(
                 'Food for Thought',
                 style: TextStyle(
