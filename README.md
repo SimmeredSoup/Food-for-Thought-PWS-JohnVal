@@ -3,7 +3,7 @@
 # Food for Thought
 [![made-with-Markdown](https://img.shields.io/badge/Made%20with-Flutter-1389FD.svg)](http://flutter.dev)
 
-A math game written in Dart with Flutter framework. Player has 4 lives and 60 seconds to complete increasingly difficult questions. Previous scores can be viewed in High Scores page.
+A math game written in Dart with Flutter framework. Player has 4 lives and 75 seconds to complete increasingly difficult questions. Previous scores can be viewed in High Scores page.
 
 ## Screenshots
 
