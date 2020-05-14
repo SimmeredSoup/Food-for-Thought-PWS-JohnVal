@@ -509,7 +509,9 @@ class _GameScreenState extends State<GameScreenTransform> {
                             alignment: Alignment.center,
                             child: FittedBox(
                               child: Text(
-                                (paused)
+                                (paused) 
+                                //players shouldn't be able to see the question
+                                //while game is paused!
                                     ? " "
                                     : " $ogNumber x $ogMultiplier ${((ogAdder >= 0) ? "+" : "-")} ${ogAdder.abs()} ",
                                 style: kWordTextStyle,

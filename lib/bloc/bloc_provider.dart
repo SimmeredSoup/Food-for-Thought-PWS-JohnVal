@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
 import 'bloc.dart';
-
+//a bloc can be seen as a 'super class' that links other classes
+//or widgets together, so they can use and change eachother freely
 class BlocProvider<T extends Bloc> extends StatefulWidget {
   final Widget child;
   final T bloc;

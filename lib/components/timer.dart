@@ -10,9 +10,9 @@ class CountDownTimer extends StatefulWidget {
   final double height;
   final Color strokeColor;
   final Duration duration;
-  //  final int secondsRemaining;
   final bool started;
-
+//make the following variables dynamic, so that
+//games can differ in timer
   CountDownTimer(
       {this.callback,
       this.width,
@@ -41,6 +41,9 @@ class _CountDownTimerState extends State<CountDownTimer>
     );
     controller.addStatusListener((status) {
       switch (status) {
+        //because the animation runs in reverse, the animation
+        //is dismissed when it is completed
+        // - when it reaches 0
         case AnimationStatus.dismissed:
           if (!this.isRestarting) {
             this.widget.callback(controller);
@@ -90,8 +93,9 @@ class _CountDownTimerState extends State<CountDownTimer>
 
   @override
   Widget build(BuildContext context) {
-    //ThemeData themeData = Theme.of(context);
     return StreamBuilder<TimerState>(
+      //should start as active, and as it is already 'fresh',
+      //a restart is unneeded
         initialData: TimerState(active: true, restart: false),
         stream: BlocProvider.of<TimerEventBloc>(context).stateStream,
         builder: (context, snapshot) {
@@ -100,6 +104,7 @@ class _CountDownTimerState extends State<CountDownTimer>
           return AnimatedBuilder(
               animation: controller,
               builder: (context, child) {
+                //the actual timer:
                 return Container(
                   height: widget.height,
                   width: widget.width,
@@ -125,6 +130,7 @@ class _CountDownTimerState extends State<CountDownTimer>
 }
 
 class CustomTimerPainter extends CustomPainter {
+  //the animation of the timer:
   CustomTimerPainter({
     this.animation,
     this.backgroundColor,
@@ -134,13 +140,14 @@ class CustomTimerPainter extends CustomPainter {
   final Color backgroundColor, color;
 
   @override
+  //this makes the animation appear on screen
   void paint(Canvas canvas, Size size) {
     Paint paint = Paint()
       ..color = backgroundColor
       ..strokeWidth = 4.0
       ..strokeCap = StrokeCap.square
       ..style = PaintingStyle.stroke;
-
+    //create a circle in the middle
     canvas.drawCircle(size.center(Offset.zero), (size.width) / 2.0, paint);
     paint.color = color;
     double progress = (1.0 - animation.value) * 2 * math.pi;
@@ -150,6 +157,8 @@ class CustomTimerPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(CustomTimerPainter old) {
+    //it should repaint the circle if the value still changes 
+    //and the (background)color is also changed
     return animation.value != old.animation.value ||
         color != old.color ||
         backgroundColor != old.backgroundColor;
