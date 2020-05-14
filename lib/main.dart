@@ -34,9 +34,12 @@ class MyApp extends StatelessWidget {
         scaffoldBackgroundColor: Color(0xFF353643),
         textTheme: Theme.of(context).textTheme.apply(fontFamily: 'PatrickHand'),
       ),
+      //startup page should be the home page
       initialRoute: 'homePage',
       home: HomeScreen(),
       routes: {
+        // /homepage seems the only one to actually work,
+        // doesnt seem necessary to remove others though
         'homePage': (context) => HomeScreen(),
         '/homePage': (context) => HomeScreen(),
         'scorePage': (context) => ScoreScreen(),

@@ -10,25 +10,35 @@ import 'game_transform.dart';
 import 'loading_screen.dart';
 
 class HomeScreen extends StatefulWidget {
-  //final HangmanWords hangmanWords = HangmanWords();
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  void transformScores() {
-    SystemSound.play(SystemSoundType.click);
-  }
 
+  //A test function, does nothing
+  //
+  //called when:
+  //secret menu button is pressed
+  void transformScores() {
+  }
+  //Another test function
+  //
+  //called when:
+  // secret menu button is pressed
   void symbowlScores() {}
 
+  //the secret menu
+  //
+  //called when:
+  //the invisible button is pressed
+  //(bottom left corner)
   Alert selectAlert() {
     return Alert(
         style: kGameOverAlertStyle,
         context: context,
         title: "Choose game",
-        // desc: "Take a break",
         buttons: [
           DialogButton(
             width: 62,
@@ -49,17 +59,16 @@ class _HomeScreenState extends State<HomeScreen> {
               Navigator.pop(context);
             },
             child: Icon(MdiIcons.bowlMix, size: 30.0),
-//                  width: 90,
             color: kDialogButtonColor,
-//                  height: 20,
           ),
         ]);
   }
 
   @override
   Widget build(BuildContext context) {
+    //height of screen for reference
     double height = MediaQuery.of(context).size.height;
-    //widget.hangmanWords.readWords();
+
     return Scaffold(
       body: SafeArea(
           child: Column(
@@ -83,6 +92,7 @@ class _HomeScreenState extends State<HomeScreen> {
           Center(
             child: Container(
               padding: EdgeInsets.all(5.0),
+              //the sashimi image
               child: Image.asset(
                 'images/sashimi.png',
                 height: height * 0.5,
@@ -100,6 +110,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   Container(
 //                    width: 155,
                     height: 64,
+                    //the start button, pressing it will start the game
                     child: ActionButton(
                       buttonTitle: 'Start',
                       onPress: () {
@@ -122,11 +133,14 @@ class _HomeScreenState extends State<HomeScreen> {
                         height: 56,
                         alignment: Alignment.centerLeft,
                         child: IconButton(
+                          //this is an invisible button, used to test the implementation
+                          //of a second game
+                          //for now it just opens a useless menu/alert
                           icon: Icon(
                             Icons.queue_music,
                             color: Theme.of(context).scaffoldBackgroundColor,
                             size: 28.0,
-                            semanticLabel: 'Hi there',
+                            semanticLabel: 'Test',
                           ),
                           onPressed: () {
                             selectAlert().show();
@@ -134,17 +148,16 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                       Container(
-//                    width: 155,
                         alignment: Alignment.centerRight,
                         height: 56,
                         width: 100,
-
+                        //button to go to the score screen via loading screen
                         child: IconButton(
                           icon: Icon(
                             MdiIcons.podium,
                             color: Colors.white,
                             size: 28.0,
-                            semanticLabel: 'Hi there',
+                            semanticLabel: 'Ranking',
                           ),
                           onPressed: () {
                             Navigator.push(
@@ -167,20 +180,3 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
-//  Container(
-// //                    width: 155,
-//                     height: 64,
-//                   //  alignment: Alignment.centerRight,
-//                     child: IconButton(
-//                       icon: MdiIcons.podium,
-//                       onPressed: () {
-//                         Navigator.push(
-//                           context,
-//                           MaterialPageRoute(
-//                             builder: (context) => LoadingScreen(),
-//                           ),
-//                         );
-//                       },
-//                     ),
-//                   ),
-//             ),

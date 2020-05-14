@@ -9,6 +9,10 @@ class ScoreScreen extends StatelessWidget {
 
   ScoreScreen({this.scores, this.title});
 
+  //a table row to be used as header
+  //
+  //called when:
+  //the table is made (page is opened)
   TableRow header() {
     return TableRow(
       children: [
@@ -21,15 +25,6 @@ class ScoreScreen extends StatelessWidget {
             ),
           ),
         ),
-        // Padding(
-        //   padding: const EdgeInsets.only(bottom: 15.0),
-        //   child: Center(
-        //     child: Text(
-        //       "Date",
-        //       style: kHighScoreTableHeaders,
-        //     ),
-        //   ),
-        // ),
         Padding(
           padding: const EdgeInsets.only(bottom: 15.0),
           child: Center(
@@ -43,6 +38,10 @@ class ScoreScreen extends StatelessWidget {
     );
   }
 
+//a single text cell of a table
+//
+//called when:
+//a new Row is created by createRow
   TableCell createTextCell(String text) {
     return TableCell(
         child: Padding(
@@ -53,8 +52,15 @@ class ScoreScreen extends StatelessWidget {
               textAlign: TextAlign.center,
             )));
   }
-
+  
+  //creates rows with the score and ranking
+  //
+  //called when:
+  //a table is created (page is loaded)
   TableRow createRow(Score score, int ranking) {
+    //return a row with the next ranking and userscore.
+    //as the scores are sorted from highest score to lowest,
+    //this will display a correct ranking.
     return TableRow(children: [
       createTextCell(ranking.toString()),
       createTextCell(score.userScore.toString())
@@ -65,9 +71,10 @@ class ScoreScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
+        //test if there are any scores
         child: scores.length == 0
+        //if there are not:
             ? Stack(
-//                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: <Widget>[
                   Center(
                     child: Text(
@@ -128,6 +135,8 @@ class ScoreScreen extends StatelessWidget {
                       ),
                     ],
                   ),
+
+                  //if there are scores to be displayed:
                   Center(
                       child: Text(
                     title,
@@ -139,6 +148,7 @@ class ScoreScreen extends StatelessWidget {
                   Expanded(
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
+                      //create a table which holds the header, ranking and scores
                       child: Table(
                         defaultVerticalAlignment:
                             TableCellVerticalAlignment.middle,
@@ -147,8 +157,12 @@ class ScoreScreen extends StatelessWidget {
                             scores
                                 .asMap()
                                 .map((index, score) => MapEntry(
+                                    //create a row with the score from the scores database
+                                    //as index starts with 0 and ranking should start with 1,
+                                    //the index should be increased by 1
                                     index, createRow(score, index + 1)))
                                 .values
+                                //does not need to be dynamic, so it is not growable
                                 .toList(growable: false),
                       ),
                     ),

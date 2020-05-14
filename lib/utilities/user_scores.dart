@@ -5,6 +5,7 @@ class Score {
   final int userScore;
   final String userName;
 
+  //set score to these 5 variables
   Score(
       {this.id = 0,
       this.scoreDate,
@@ -12,6 +13,7 @@ class Score {
       this.gameid,
       this.userName});
 
+  //set the actual values of the variables
   Score.fromMap(Map<String, dynamic> map)
       : id = map['id'],
         gameid = map['gameid'],
@@ -19,7 +21,6 @@ class Score {
         scoreDate =DateTime.fromMillisecondsSinceEpoch(map['scoreDate']),
         userName = map['userName'],
         userScore = map['userScore'];
-
   Map<String, dynamic> toMap() {
     return {
       'scoreDate': scoreDate.millisecondsSinceEpoch,
@@ -30,7 +31,7 @@ class Score {
   }
 
   // Implement toString to make it easier to see information about
-  // each dog when using the print statement.
+  // each score when using the print statement.
 
   @override
   String toString() {

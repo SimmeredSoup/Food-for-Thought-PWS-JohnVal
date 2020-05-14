@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 
+
+//This whole file mostly contains colors, font styles and likewise
+//things that are, like the name suggest,
+//constant (not dynamic)
+
 const kActionButtonTextStyle = TextStyle(
   fontSize: 25,
   color: Colors.white,
@@ -33,6 +38,28 @@ const kHighScoreTableRowsStyle = TextStyle(
   letterSpacing: 1.0,
 );
 
+const kDialogButtonTextStyle = TextStyle(
+  color: Colors.white,
+  fontSize: 25,
+  fontWeight: FontWeight.w300,
+  letterSpacing: 0.5,
+);
+
+const kWordTextStyle = TextStyle(
+    fontSize: 57,
+    color: Colors.white,
+    fontFamily: 'FiraMono',
+    letterSpacing: 8);
+
+const kDialogButtonColor = Color(0x00000000);
+
+const kWordCounterTextStyle =
+    TextStyle(fontSize: 29.5, color: Colors.white, fontWeight: FontWeight.w900);
+
+
+//the values of certain parameters of Alerts such
+//as animationduration, persistence, style,
+//animation etc. Should be self-explanitory
 var kSuccessAlertStyle = AlertStyle(
   animationType: AnimationType.grow,
   isCloseButton: false,
@@ -49,6 +76,7 @@ var kSuccessAlertStyle = AlertStyle(
     letterSpacing: 1.5,
   ),
 );
+
 var kExitAlertStyle = AlertStyle(
   animationType: AnimationType.grow,
   isCloseButton: false,
@@ -118,20 +146,4 @@ var kFailedAlertStyle = AlertStyle(
   ),
 );
 
-const kDialogButtonTextStyle = TextStyle(
-  color: Colors.white,
-  fontSize: 25,
-  fontWeight: FontWeight.w300,
-  letterSpacing: 0.5,
-);
 
-const kWordTextStyle = TextStyle(
-    fontSize: 57,
-    color: Colors.white,
-    fontFamily: 'FiraMono',
-    letterSpacing: 8);
-
-const kDialogButtonColor = Color(0x00000000);
-
-const kWordCounterTextStyle =
-    TextStyle(fontSize: 29.5, color: Colors.white, fontWeight: FontWeight.w900);
